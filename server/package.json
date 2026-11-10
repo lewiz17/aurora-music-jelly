@@ -1,0 +1,19 @@
+{
+    "name": "aurora-server",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "description": "Aurora Music — gateway, admin panel and YouTube Music playlist importer",
+    "engines": {
+        "node": ">=20"
+    },
+    "scripts": {
+        "start": "node src/index.js",
+        "dev": "node --watch src/index.js"
+    },
+    "dependencies": {
+        "cookie-parser": "^1.4.7",
+        "express": "^4.21.2",
+        "multer": "^1.4.5-lts.1"
+    }
+}

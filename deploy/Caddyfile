@@ -1,0 +1,6 @@
+# Copia en /etc/caddy/Caddyfile y cambia el dominio.
+# Caddy pide el certificado solo; asegúrate de que el DNS A apunta a este servidor.
+music.tudominio.com {
+	encode gzip
+	reverse_proxy 127.0.0.1:8787
+}

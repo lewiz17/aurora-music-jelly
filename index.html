@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <script>
+            /*
+             * Sandboxed previews embed the app in an iframe without `allow-same-origin`, so
+             * touching localStorage/sessionStorage throws and kills every inline script after
+             * it. Swap in in-memory shims (nothing is persisted in that case) so the app keeps
+             * working instead of showing a blank page. Normal browsers are untouched.
+             */
+            (function () {
+                function memoryStorage() {
+                    var data = {}
+                    return {
+                        getItem: function (k) {
+                            return Object.prototype.hasOwnProperty.call(data, k) ? data[k] : null
+                        },
+                        setItem: function (k, v) {
+                            data[k] = String(v)
+                        },
+                        removeItem: function (k) {
+                            delete data[k]
+                        },
+                        clear: function () {
+                            data = {}
+                        },
+                        key: function (i) {
+                            return Object.keys(data)[i] || null
+                        },
+                        get length() {
+                            return Object.keys(data).length
+                        },
+                    }
+                }
+                for (var i = 0; i < 2; i++) {
+                    var name = i === 0 ? 'localStorage' : 'sessionStorage'
+                    try {
+                        window[name].getItem('__probe__')
+                    } catch (e) {
+                        Object.defineProperty(window, name, { value: memoryStorage(), configurable: true })
+                    }
+                }
+            })()
+        </script>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+        <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+        <noscript>
+            <link rel="stylesheet" href="/noscript.css" />
+        </noscript>
+        <meta name="apple-mobile-web-app-title" content="Aurora" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0a12" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+        <meta name="description" content="Tu música, en un solo lugar." />
+        <title>Aurora</title>
+    </head>
+    <body>
+        <script>
+            // Service worker is a nice-to-have: register it defensively so a blocked context
+            // (sandboxed iframe, private mode) never breaks the app.
+            window.addEventListener('load', function () {
+                try {
+                    // Reading navigator.serviceWorker itself throws in sandboxed frames, so the
+                    // access has to live inside the try block.
+                    if (window.isSecureContext && navigator.serviceWorker) {
+                        navigator.serviceWorker.register(new URL('sw.js', document.baseURI), { scope: './' }).catch(function () {})
+                    }
+                } catch (e) {
+                    /* ignore */
+                }
+            })
+        </script>
+        <div id="root">
+            <noscript>
+                <div class="drawback_interface">
+                    <div class="container">
+                        <div class="drawback">
+                            <div class="drawback_header">
+                                <a href="/" class="container">
+                                    <div class="logo">
+                                        <div class="image"></div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="drawback_content">
+                                <div class="greeting"><div class="title">Interfaz limitada</div></div>
+                                <div class="description">
+                                    <blockquote>
+                                        <p>
+                                            Esta app necesita JavaScript para funcionar. Actívalo en tu navegador y
+                                            vuelve a cargar la página.
+                                        </p>
+                                    </blockquote>
+                                    <div class="conclusion">
+                                        <p>
+                                            Con JavaScript activo tendrás tu música lista, sin distracciones.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preview">
+                            <img class="thumbnail" alt="Interface - Light variant" src="public/light-variant.webp" />
+                        </div>
+                    </div>
+                    <div class="disclaimer">Aurora - v__VERSION__</div>
+                </div>
+            </noscript>
+        </div>
+        <script type="module" src="/src/main.tsx"></script>
+    </body>
+</html>

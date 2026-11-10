@@ -1,0 +1,17 @@
+[Unit]
+Description=Aurora Music
+After=network.target
+
+[Service]
+Type=simple
+User=aurora
+WorkingDirectory=/opt/aurora-music
+EnvironmentFile=/etc/aurora/aurora.env
+ExecStart=/usr/bin/node server/src/index.js
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

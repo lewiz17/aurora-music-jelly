@@ -1,0 +1,362 @@
+.tracklist {
+    position: relative;
+}
+
+.tracklist > .track-item {
+    display: flex;
+    position: relative;
+    cursor: pointer;
+    padding: 8px 10px;
+    margin: 0 -10px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease-out;
+}
+
+.tracklist > .track-item:hover {
+    background-color: var(--bg-color-secondary);
+}
+
+.tracklist > .track-item.active {
+    background-color: var(--bg-color-secondary);
+}
+
+.tracklist > .track-item > .track-indicator {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 28px;
+    flex-shrink: 0;
+}
+
+.tracklist > .track-item > .track-indicator > .track-number {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    font-size: 0.725rem;
+    font-weight: 500;
+    color: var(--font-color-tertiary);
+    margin-top: 1px;
+    transition:
+        opacity 0.2s ease-out,
+        visibility 0.2s ease-out,
+        transform 0.2s ease-out;
+}
+
+.tracklist > .track-item.most-played > .track-indicator > .track-number {
+    color: var(--brand-color);
+}
+
+/* Hide track-number when a track is hovered/playing/paused */
+.tracklist > .track-item:hover > .track-indicator > .track-number,
+.tracklist > .track-item.playing > .track-indicator > .track-number,
+.tracklist > .track-item.paused > .track-indicator > .track-number {
+    position: absolute;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(calc(50% - 8px));
+}
+
+/* Hide track-state by default */
+.tracklist > .track-item > .track-indicator > .track-state {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+        opacity 0.2s ease-out,
+        visibility 0.2s ease-out;
+}
+
+/* Show track-state when a track is hovered/playing/paused */
+.tracklist > .track-item:hover > .track-indicator > .track-state,
+.tracklist > .track-item.playing > .track-indicator > .track-state,
+.tracklist > .track-item.paused > .track-indicator > .track-state {
+    position: relative;
+    opacity: 1;
+    visibility: visible;
+}
+
+.tracklist > .track-item > .track-indicator > .track-state > .play {
+    position: absolute;
+    cursor: pointer;
+    transition:
+        opacity 0.2s ease-out,
+        visibility 0.2s ease-out;
+}
+
+/* Hide play button when a track is playing or paused */
+.tracklist > .track-item.playing > .track-indicator > .track-state > .play,
+.tracklist > .track-item.paused > .track-indicator > .track-state > .play {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Show play button when a track is paused and you hover the track */
+.tracklist > .track-item.paused:hover > .track-indicator > .track-state > .play {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tracklist > .track-item > .track-indicator > .track-state > .play > .play-icon {
+    display: block;
+    width: 20px;
+    height: 14px;
+    background-color: var(--font-color-tertiary);
+    mask-repeat: no-repeat;
+    mask-image: url(/play.fill.svg);
+}
+
+/* Hide pause button by default */
+.tracklist > .track-item > .track-indicator > .track-state > .pause {
+    position: absolute;
+    opacity: 0;
+    visibility: hidden;
+    cursor: pointer;
+    transition:
+        opacity 0.2s ease-out,
+        visibility 0.2s ease-out;
+}
+
+/* Hide pause button when a track is paused */
+.tracklist > .track-item.paused > .track-indicator > .track-state > .pause {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Show pause button when a track is playing and you hover the track */
+.tracklist > .track-item.playing:hover > .track-indicator > .track-state > .pause {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tracklist > .track-item > .track-indicator > .track-state > .pause > .pause-icon {
+    display: block;
+    width: 20px;
+    height: 14px;
+    background-color: var(--font-color-tertiary);
+    mask-repeat: no-repeat;
+    mask-image: url(/pause.fill.svg);
+}
+
+/* Hide play-state animation by default */
+.tracklist > .track-item > .track-indicator > .track-state > .play-state-animation {
+    position: absolute;
+    margin-left: -8px;
+    margin-bottom: 6px;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 0.2s ease-out,
+        visibility 0.2s ease-out;
+}
+
+/* Show play-state animation when the track is playing or paused */
+.tracklist > .track-item.playing > .track-indicator > .track-state > .play-state-animation,
+.tracklist > .track-item.paused > .track-indicator > .track-state > .play-state-animation {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Hide play-state animation when you hover the track */
+.tracklist > .track-item:hover > .track-indicator > .track-state > .play-state-animation {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Play-state animation */
+.tracklist > .track-item > .track-indicator > .track-state > .play-state-animation > .sound-bars {
+    animation-play-state: paused;
+}
+
+/* Animation is active when a track is playing */
+.tracklist > .track-item.playing > .track-indicator > .track-state > .play-state-animation > .sound-bars {
+    animation-play-state: running;
+}
+
+/* Animation is paused when a track is stopped */
+.tracklist > .track-item.paused > .track-indicator > .track-state > .play-state-animation > .sound-bars {
+    animation-play-state: paused;
+}
+
+/* The individual sound-bars will inherit the play state from parent */
+.tracklist > .track-item > .track-indicator > .track-state > .play-state-animation > .sound-bars > .bar {
+    animation-play-state: inherit !important;
+    transform-origin: bottom;
+    fill: var(--brand-color);
+}
+
+.tracklist > .track-item > .track-indicator > .track-state > .play-state-animation > .sound-bars > .bar1 {
+    animation: TrackListbounce 0.5s infinite ease-in-out;
+}
+
+.tracklist > .track-item > .track-indicator > .track-state > .play-state-animation > .sound-bars > .bar2 {
+    animation: TrackListbounce 0.55s infinite ease-in-out;
+}
+
+.tracklist > .track-item > .track-indicator > .track-state > .play-state-animation > .sound-bars > .bar3 {
+    animation: TrackListbounce 0.45s infinite ease-in-out;
+}
+
+.tracklist > .track-item > .track-indicator > .track-state > .play-state-animation > .sound-bars > .bar4 {
+    animation: TrackListbounce 0.6s infinite ease-in-out;
+}
+
+@keyframes TrackListbounce {
+    0%,
+    100% {
+        transform: scaleY(1);
+    }
+    50% {
+        transform: scaleY(1.8);
+    }
+}
+
+.tracklist > .track-item > .track-details {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.tracklist > .track-item > .track-details > .container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.tracklist > .track-item > .track-details > .container > .name {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.tracklist > .track-item > .track-details > .container > .name::after {
+    content: '';
+    display: block;
+    flex-grow: 1;
+    margin: 0 10px;
+    border-bottom: 1px dashed var(--border-color);
+    transition:
+        opacity 0.2s ease-out,
+        visibility 0.2s ease-out,
+        border-color 0.2s ease-out;
+}
+
+.tracklist > .track-item:hover > .track-details > .container > .name::after {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.tracklist > .track-item.active > .track-details > .container > .name::after {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.tracklist > .track-item.playing > .track-details > .container > .name::after,
+.tracklist > .track-item.paused > .track-details > .container > .name::after {
+    border-color: var(--border-color-secondary);
+}
+
+.tracklist > .track-item > .track-details > .container > .name > .text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    /* Help with CJK letter spacing */
+    line-height: 1rem;
+    transition: color 0.2s ease-out;
+}
+
+.tracklist > .track-item.playing > .track-details > .container > .name > .text,
+.tracklist > .track-item.paused > .track-details > .container > .name > .text {
+    color: var(--font-color-active);
+}
+
+.tracklist > .track-item > .track-details > .container > .artist,
+.tracklist > .track-item > .track-details > .container > .album {
+    font-size: 0.725rem;
+    font-weight: 600;
+    /* Help with CJK letter spacing */
+    line-height: 0.875rem;
+    color: var(--font-color-tertiary);
+    transition: color 0.2s ease-out;
+}
+
+.tracklist > .track-item.playing > .track-details > .container > .artist,
+.tracklist > .track-item.paused > .track-details > .container > .artist,
+.tracklist > .track-item.playing > .track-details > .container > .album,
+.tracklist > .track-item.paused > .track-details > .container > .album {
+    color: var(--font-color-secondary);
+}
+
+.tracklist > .track-item > .track-details > .duration {
+    font-size: 0.725rem;
+    font-weight: 500;
+    color: var(--font-color-tertiary);
+    margin-top: 1px;
+    transition: color 0.2s ease-out;
+}
+
+.tracklist > .track-item.playing > .track-details > .duration,
+.tracklist > .track-item.paused > .track-details > .duration {
+    color: var(--font-color-secondary);
+}
+
+.tracklist > .track-item > .track-details > .track-indicators {
+    display: flex;
+    align-items: center;
+}
+
+.tracklist > .track-item > .track-details > .track-indicators:has(.favorited, .download-state) {
+    margin-top: -1px;
+    margin-right: 3px;
+}
+
+.tracklist > .track-item > .track-details > .track-indicators > .download-state > .icon {
+    padding: 3px;
+    fill: var(--font-color-tertiary);
+    transition: fill 0.2s ease-out;
+}
+
+.tracklist > .track-item.playing > .track-details > .track-indicators > .download-state > .icon,
+.tracklist > .track-item.paused > .track-details > .track-indicators > .download-state > .icon {
+    fill: var(--font-color-secondary);
+}
+
+.tracklist
+    > .track-item
+    > .track-details
+    > .track-indicators
+    > .download-state
+    > .icon.downloading.active-sync
+    > svg
+    path:last-child {
+    clip-path: inset(100% 0 0 0);
+    animation: syncColorSweepTL 1.6s linear infinite;
+}
+
+@keyframes syncColorSweepTL {
+    0% {
+        clip-path: inset(0 0 100% 0);
+    }
+    50% {
+        clip-path: inset(0% 0 0 0);
+    }
+    100% {
+        clip-path: inset(100% 0 0 0);
+    }
+}
+
+.tracklist > .track-item > .track-details > .track-indicators > .favorited {
+    padding: 3px;
+    color: var(--font-color-tertiary);
+    transition: color 0.2s ease-out;
+}
+
+.tracklist > .track-item.playing > .track-details > .track-indicators > .favorited,
+.tracklist > .track-item.paused > .track-details > .track-indicators > .favorited {
+    color: var(--font-color-secondary);
+}

@@ -1,0 +1,817 @@
+.now-playing-dimmer {
+    display: none;
+}
+
+.now-playing-lyrics {
+    position: relative;
+    width: 100%;
+}
+
+/* Playing interface */
+.now-playing-lyrics > .ui {
+    position: relative;
+    z-index: 1;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.now-playing-lyrics > .ui > .playing-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 12px;
+    padding-top: 40px;
+    padding-bottom: 28px;
+    backdrop-filter: blur(20px);
+    mask-image: linear-gradient(to bottom, black 76%, transparent 100%);
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper {
+    width: 600px;
+    max-width: 100%;
+    margin: 0 auto;
+    transition: filter 0.2s ease;
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner {
+    display: flex;
+    align-items: center;
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .primary {
+    display: flex;
+    align-items: center;
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .primary > .return_icon {
+    cursor: pointer;
+    padding: 6px;
+    margin-right: 14px;
+    border-radius: 20px;
+    transition: background-color 0.2s ease-out;
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .primary > .return_icon:hover {
+    background-color: var(--playing-bg-color-secondary);
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .primary > .thumbnail {
+    position: relative;
+    overflow: hidden;
+    border-radius: 6px;
+    margin-right: 12px;
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .primary > .thumbnail > img {
+    width: 40px;
+    height: 40px;
+    border-radius: inherit;
+    object-fit: cover;
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .primary > .thumbnail > .fallback-thumbnail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: inherit;
+    background-color: var(--bg-color-tertiary);
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .primary > .thumbnail > .fallback-thumbnail > svg {
+    fill: var(--font-color-tertiary);
+    opacity: 0.4;
+    margin-left: -4%;
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .primary > .thumbnail > .shadow-border {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    box-shadow: var(--playing-border-color) 0px 0px 0px 1px inset;
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .secondary {
+    overflow: hidden;
+    max-width: 100%;
+    flex: 1;
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .secondary > .artist {
+    font-size: 0.75rem;
+    font-weight: 600;
+    /* Help with CJK letter spacing */
+    line-height: 0.9375rem;
+    color: var(--font-color-tertiary);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin-bottom: 2px;
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .secondary > .song-name {
+    font-size: 1rem;
+    font-weight: 700;
+    /* Help with CJK letter spacing */
+    line-height: 1.25rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .tertiary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 10px;
+    margin-right: 6px;
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .tertiary > .favorite-state {
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 20px;
+    transition: background-color 0.2s ease-out;
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .tertiary > .favorite-state:hover {
+    background-color: var(--playing-bg-color-secondary);
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .tertiary > .favorite-state > svg {
+    color: var(--brand-color);
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .tertiary > .more {
+    cursor: pointer;
+    padding: 7px;
+    border-radius: 20px;
+    background-color: var(--playing-bg-color);
+    transition: background-color 0.2s ease-out;
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .tertiary > .more:hover {
+    background-color: var(--playing-bg-color-secondary);
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .tertiary > .more.active {
+    background-color: var(--playing-bg-color-secondary);
+}
+
+.now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .tertiary > .more > svg {
+    fill: var(--brand-color);
+}
+
+.now-playing-lyrics > .ui > .playing-content {
+    padding: 12px;
+    margin: -12px 0;
+    transition: filter 0.2s ease;
+}
+
+/* Lyrics changes for now playing */
+.now-playing-lyrics > .ui > .playing-content > .lyrics-page {
+    width: 600px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.now-playing-lyrics > .ui > .playing-content > .lyrics-page > .empty {
+    margin: 4px 42px;
+}
+
+.now-playing-lyrics > .ui > .playing-content > .lyrics-page > .lyrics-line {
+    margin: 0 4px;
+}
+
+.now-playing-lyrics > .ui > .playing-content > .lyrics-page.synced > .lyrics-line {
+    color: var(--playing-font-color);
+}
+
+.now-playing-lyrics > .ui > .playing-content > .lyrics-page.synced:has(.lyric-word) > .lyrics-line.active {
+    color: var(--playing-font-color-active);
+}
+
+.now-playing-lyrics > .ui > .playing-content > .lyrics-page.synced > .lyrics-line.active {
+    color: var(--brand-color);
+}
+
+.now-playing-lyrics > .ui > .playing-content > .lyrics-page.synced > .lyrics-line:hover {
+    background-color: var(--playing-bg-color);
+}
+
+/* Progress info */
+.now-playing-lyrics > .ui > .playing-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    padding: 12px;
+    padding-top: 28px;
+    padding-bottom: 40px;
+    margin-top: auto;
+    backdrop-filter: blur(20px);
+    mask-image: linear-gradient(to top, black 82%, transparent 100%);
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper {
+    width: 600px;
+    max-width: 100%;
+    margin: 0 auto;
+    transition: filter 0.2s ease;
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner {
+    margin: 0 40px;
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-progress {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 14px;
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-progress > .info {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    margin: 0 2px;
+    margin-bottom: 8px;
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-progress > .info > .duration {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--font-color-tertiary);
+    font-variant-numeric: tabular-nums;
+    opacity: 0.8;
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-progress > .info > .quality {
+    font-size: 0.725rem;
+    font-weight: 500;
+    color: var(--font-color-secondary);
+    display: flex;
+    align-items: center;
+    margin: 0 8px;
+    margin-bottom: 2px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--playing-bg-color-secondary);
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-progress > .info > .quality > .divider {
+    width: 2px;
+    height: 2px;
+    margin: 0 4px;
+    margin-left: 5px;
+    border-radius: 50%;
+    background-color: var(--font-color-secondary);
+}
+
+.now-playing-lyrics
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-progress
+    > .info
+    > .quality
+    > .bitrate
+    > .number {
+    font-variant-numeric: tabular-nums;
+}
+
+.now-playing-lyrics
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-progress
+    > .info
+    > .quality
+    > .download-state {
+    fill: var(--font-color-secondary);
+    margin-left: 6px;
+    margin-right: -4px;
+}
+
+/* Progress bar */
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-progress > .progress {
+    position: relative;
+    display: flex;
+    height: 8px;
+    touch-action: none;
+}
+
+/* Progress loading */
+.now-playing-lyrics
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-progress
+    > .progress:has(input.loading)::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    user-select: none;
+    pointer-events: none;
+    opacity: 0;
+    transition: transform 0.1s linear;
+    background-image: linear-gradient(
+        90deg,
+        var(--playing-bg-color-secondary) 0%,
+        var(--playing-bg-color-quaternary) 20%,
+        var(--playing-bg-color-secondary) 40%
+    );
+    background-size: 200%;
+    animation: playing-loading-shimmer 1.4s infinite linear;
+    animation-delay: 0.4s;
+}
+
+@keyframes playing-loading-shimmer {
+    0% {
+        opacity: 1;
+        background-position: 100%;
+    }
+    60%,
+    100% {
+        opacity: 1;
+        background-position: -100%;
+    }
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-progress > .progress > input {
+    position: relative;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0);
+    --progress-width: 0%;
+    --buffered-width: 0%;
+    --transition-duration: 0s;
+}
+
+/* WebKit progress visuals */
+.now-playing-lyrics
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-progress
+    > .progress
+    > input::-webkit-slider-runnable-track {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    background:
+        linear-gradient(var(--playing-bg-color-quaternary), var(--playing-bg-color-quaternary)) no-repeat 0 /
+            var(--progress-width) 100%,
+        linear-gradient(var(--playing-bg-color-tertiary), var(--playing-bg-color-tertiary)) no-repeat 0 /
+            var(--buffered-width) 100%,
+        var(--playing-bg-color-secondary);
+    transition: background-size var(--transition-duration) linear;
+}
+
+/* Firefox progress visuals */
+.now-playing-lyrics
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-progress
+    > .progress
+    > input::-moz-range-track {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    background:
+        linear-gradient(var(--playing-bg-color-quaternary), var(--playing-bg-color-quaternary)) no-repeat 0 /
+            var(--progress-width) 100%,
+        linear-gradient(var(--playing-bg-color-tertiary), var(--playing-bg-color-tertiary)) no-repeat 0 /
+            var(--buffered-width) 100%,
+        var(--playing-bg-color-secondary);
+    transition: background-size var(--transition-duration) linear;
+}
+
+/* Hiding the input slider thumbs for different browsers */
+.now-playing-lyrics
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-progress
+    > .progress
+    > input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 0;
+    height: 0;
+}
+
+.now-playing-lyrics
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-progress
+    > .progress
+    > input::-moz-range-thumb {
+    width: 0;
+    height: 0;
+    border: none;
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-progress > .progress > input::-ms-thumb {
+    width: 0;
+    height: 0;
+}
+
+/* Player controls */
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .shuffle {
+    cursor: pointer;
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .shuffle > .shuffle-icon {
+    display: block;
+    width: 32px;
+    height: 28px;
+    background-color: var(--font-color-secondary);
+    mask-repeat: no-repeat;
+    mask-image: url(/player-shuffle.svg);
+    transition: background-color 0.2s ease-out;
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .shuffle:hover > .shuffle-icon {
+    background-color: var(--font-color);
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .shuffle.active > .shuffle-icon {
+    background-color: var(--brand-color);
+}
+
+/* Primary controls */
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .primary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .primary > .previous {
+    cursor: pointer;
+    padding: 2px 0;
+    transform: rotate(180deg);
+}
+
+.now-playing-lyrics
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-controls
+    > .primary
+    > .previous
+    > .previous-icon {
+    display: block;
+    width: 32px;
+    height: 28px;
+    background-color: var(--font-color-secondary);
+    mask-size: cover;
+    mask-repeat: no-repeat;
+    mask-image: url(/player-next.svg);
+    transition: opacity 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
+}
+
+.now-playing-lyrics
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-controls
+    > .primary
+    > .previous:hover
+    > .previous-icon {
+    background-color: var(--font-color);
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .primary > .container {
+    position: relative;
+    width: 46px;
+    height: 40px;
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .primary > .container > .play {
+    position: absolute;
+    cursor: pointer;
+    transition:
+        opacity 0.2s ease-out,
+        visibility 0.2s ease-out;
+}
+
+/* Hide play button when a track is playing */
+.now-playing-lyrics.playing
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-controls
+    > .primary
+    > .container
+    > .play {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.now-playing-lyrics
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-controls
+    > .primary
+    > .container
+    > .play
+    > .play-icon {
+    display: block;
+    width: 46px;
+    height: 40px;
+    background-color: var(--font-color-secondary);
+    mask-repeat: no-repeat;
+    mask-image: url(/play.svg);
+    transition: background-color 0.2s ease-out;
+}
+
+.now-playing-lyrics
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-controls
+    > .primary
+    > .container
+    > .play:hover
+    > .play-icon {
+    background-color: var(--font-color);
+}
+
+/* Hide pause button by default */
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .primary > .container > .pause {
+    position: absolute;
+    opacity: 0;
+    visibility: hidden;
+    cursor: pointer;
+    transition:
+        opacity 0.2s ease-out,
+        visibility 0.2s ease-out;
+}
+
+/* Show pause button when a track is playing */
+.now-playing-lyrics.playing
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-controls
+    > .primary
+    > .container
+    > .pause {
+    opacity: 1;
+    visibility: visible;
+}
+
+.now-playing-lyrics
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-controls
+    > .primary
+    > .container
+    > .pause
+    > .pause-icon {
+    display: block;
+    width: 46px;
+    height: 40px;
+    background-color: var(--font-color-secondary);
+    mask-repeat: no-repeat;
+    mask-image: url(/pause.svg);
+    transition: background-color 0.2s ease-out;
+}
+
+.now-playing-lyrics
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-controls
+    > .primary
+    > .container
+    > .pause:hover
+    > .pause-icon {
+    background-color: var(--font-color);
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .primary > .next {
+    cursor: pointer;
+    padding: 2px 0;
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .primary > .next > .next-icon {
+    display: block;
+    width: 32px;
+    height: 28px;
+    background-color: var(--font-color-secondary);
+    mask-size: cover;
+    mask-repeat: no-repeat;
+    mask-image: url(/player-next.svg);
+    transition: background-color 0.2s ease-out;
+}
+
+.now-playing-lyrics
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-controls
+    > .primary
+    > .next:hover
+    > .next-icon {
+    background-color: var(--font-color);
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .repeat {
+    cursor: pointer;
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .repeat > .repeat-icon {
+    display: block;
+    width: 32px;
+    height: 28px;
+    background-color: var(--font-color-secondary);
+    mask-repeat: no-repeat;
+    mask-image: url(/player-repeat.svg);
+    transition: background-color 0.2s ease-out;
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .repeat > .repeat-icon-one {
+    display: block;
+    width: 32px;
+    height: 28px;
+    background-color: var(--font-color-secondary);
+    mask-repeat: no-repeat;
+    mask-image: url(/player-repeat-one.svg);
+    transition: background-color 0.2s ease-out;
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .repeat:hover > .repeat-icon,
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .repeat:hover > .repeat-icon-one {
+    background-color: var(--font-color);
+}
+
+.now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .repeat.active > .repeat-icon,
+.now-playing-lyrics
+    > .ui
+    > .playing-footer
+    > .wrapper
+    > .inner
+    > .playing-controls
+    > .repeat.active
+    > .repeat-icon-one {
+    background-color: var(--brand-color);
+}
+
+/* Background blurred artwork toggle option? */
+.now-playing-lyrics > .background-artwork {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Fallback for systems with WebKit DMA-BUF renderer issues (https://github.com/Stannnnn/jelly-app/issues/33) */
+    filter: blur(60px) saturate(2.2);
+    filter: blur(60px) saturate(1.6) contrast(200%);
+    opacity: var(--playing-artwork-opacity);
+    pointer-events: none;
+}
+
+.now-playing-lyrics > .background-artwork > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transform: scale(1.2);
+}
+
+/* Responsive */
+@media only screen and (max-width: 480px), (pointer: coarse) {
+    .now-playing-dimmer {
+        display: block;
+        position: fixed;
+        z-index: 4;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+        opacity: 0;
+        visibility: hidden;
+        background-color: var(--bg-color-dimmer);
+        transition:
+            opacity 0.2s ease,
+            visibility 0.2s ease;
+    }
+
+    .music-app:has(.now-playing-lyrics):has(.dropdown.active) > .now-playing-dimmer {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .music-app:has(.now-playing-lyrics):has(.dropdown.active) > .now-playing-lyrics > .ui > .playing-content {
+        filter: blur(16px);
+    }
+
+    .music-app:has(.now-playing-lyrics):has(.dropdown.active) > .now-playing-lyrics > .ui > .playing-header > .wrapper {
+        filter: blur(16px);
+    }
+
+    .music-app:has(.now-playing-lyrics):has(.dropdown.active) > .now-playing-lyrics > .ui > .playing-footer > .wrapper {
+        filter: blur(16px);
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .now-playing-lyrics > .ui > .playing-header {
+        padding-top: 17px;
+        mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+    }
+
+    .now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .primary > .return_icon {
+        margin-right: 10px;
+    }
+
+    .now-playing-lyrics > .ui > .playing-header > .wrapper > .inner > .primary > .thumbnail {
+        margin-right: 10px;
+    }
+
+    .now-playing-lyrics > .ui > .playing-footer {
+        padding-bottom: 24px;
+        mask-image: linear-gradient(to top, black 80%, transparent 100%);
+    }
+
+    .now-playing-lyrics > .ui > .playing-footer {
+        padding-bottom: max(24px, env(safe-area-inset-bottom, 24px));
+    }
+
+    html.safeAreaFallback .now-playing-lyrics > .ui > .playing-footer {
+        padding-bottom: 24px;
+    }
+
+    .now-playing-lyrics > .ui > .playing-content > .lyrics-page > .empty {
+        margin: 4px 8px;
+    }
+
+    .now-playing-lyrics > .ui > .playing-content > .lyrics-page > .lyrics-line {
+        margin: 0 -4px;
+    }
+
+    .now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner {
+        margin: 0 6px;
+    }
+}
+
+@media only screen and (pointer: coarse) {
+    .now-playing-lyrics > .ui > .playing-content > .lyrics-page.synced > .lyrics-line:hover {
+        background-color: unset;
+    }
+
+    .now-playing-lyrics > .ui > .playing-content > .lyrics-page.synced > .lyrics-line:active {
+        background-color: var(--playing-bg-color);
+    }
+}
+
+@media only screen and (max-width: 270px) {
+    .now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls {
+        gap: 14px;
+    }
+
+    .now-playing-lyrics > .ui > .playing-footer > .wrapper > .inner > .playing-controls > .primary {
+        gap: 6px;
+    }
+}

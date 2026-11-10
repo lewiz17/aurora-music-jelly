@@ -1,0 +1,250 @@
+.album-page {
+    margin-top: 4px;
+}
+
+.album-page > .album-header {
+    display: flex;
+    align-items: center;
+    margin-left: 28px;
+    margin-bottom: 14px;
+}
+
+.album-page > .album-header > .thumbnail {
+    display: block;
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    margin-right: 20px;
+    background-color: var(--bg-color-secondary);
+}
+
+.album-page > .album-header > .thumbnail > .thumbnail {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.album-page > .album-header > .thumbnail > .fallback-thumbnail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background-color: var(--bg-color-tertiary);
+}
+
+.album-page > .album-header > .thumbnail > .fallback-thumbnail > svg {
+    fill: var(--font-color-tertiary);
+    opacity: 0.6;
+    margin-left: -4%;
+}
+
+.album-page > .album-header > .album-details {
+    flex: 1;
+}
+
+.album-page > .album-header > .album-details > .artist {
+    font-size: 0.9rem;
+    font-weight: 600;
+    /* Help with CJK letter spacing */
+    line-height: 1.0625rem;
+    margin-bottom: 4px;
+}
+
+.album-page > .album-header > .album-details > .date {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--font-color-tertiary);
+    margin-bottom: 4px;
+}
+
+.album-page > .album-header > .album-details > .stats {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--font-color-tertiary);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.album-page > .album-header > .album-details > .stats > .track-amount > .number {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.album-page > .album-header > .album-details > .stats > .divider {
+    width: 2px;
+    height: 2px;
+    margin: 0 4px;
+    margin-top: 2px;
+    border-radius: 50%;
+    background-color: var(--font-color-tertiary);
+}
+
+.album-page > .album-header > .album-details > .stats > .length > .number {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.album-page > .album-header > .album-details > .stats > .plays > .number {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.album-page > .album-header > .album-details > .actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.album-page > .album-header > .album-details > .actions > .primary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.album-page > .album-header > .album-details > .actions > .primary > .play-album {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 6px 11px;
+    border-radius: 6px;
+    background-color: var(--bg-color-secondary);
+    transition: background-color 0.2s ease-out;
+}
+
+.album-page > .album-header > .album-details > .actions > .primary > .play-album:hover {
+    background-color: var(--bg-color-tertiary);
+}
+
+.album-page > .album-header > .album-details > .actions > .primary > .play-album > .play-icon {
+    display: block;
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    background-color: var(--brand-color);
+    mask-repeat: no-repeat;
+    mask-image: url(/play.fill.svg);
+}
+
+.album-page > .album-header > .album-details > .actions > .primary > .play-album > .text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--brand-color);
+}
+
+.album-page > .album-header > .album-details > .actions > .primary > .favorite-state {
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 20px;
+    transition: background-color 0.2s ease-out;
+}
+
+.album-page > .album-header > .album-details > .actions > .primary > .favorite-state:hover {
+    background-color: var(--bg-color-tertiary);
+}
+
+.album-page > .album-header > .album-details > .actions > .primary > .favorite-state > svg {
+    color: var(--brand-color);
+}
+
+.album-page > .album-header > .album-details > .actions > .secondary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.album-page > .album-header > .album-details > .actions > .secondary > .download-state {
+    fill: var(--font-color-tertiary);
+}
+
+.album-page
+    > .album-header
+    > .album-details
+    > .actions
+    > .secondary
+    > .download-state
+    > .icon.downloading.active-sync
+    > svg
+    path:last-child {
+    clip-path: inset(100% 0 0 0);
+    animation: syncColorSweepAlbum 1.6s linear infinite;
+}
+
+@keyframes syncColorSweepAlbum {
+    0% {
+        clip-path: inset(0 0 100% 0);
+    }
+    50% {
+        clip-path: inset(0% 0 0 0);
+    }
+    100% {
+        clip-path: inset(100% 0 0 0);
+    }
+}
+
+.album-page > .album-header > .album-details > .actions > .secondary > .more {
+    cursor: pointer;
+    padding: 7px;
+    border-radius: 20px;
+    background-color: var(--bg-color-secondary);
+    transition: background-color 0.2s ease-out;
+}
+
+.album-page > .album-header > .album-details > .actions > .secondary > .more:hover {
+    background-color: var(--bg-color-tertiary);
+}
+
+.album-page > .album-header > .album-details > .actions > .secondary > .more.active {
+    background-color: var(--bg-color-tertiary);
+}
+
+.album-page > .album-header > .album-details > .actions > .secondary > .more > svg {
+    fill: var(--brand-color);
+}
+
+.album-page > .album-content > .disc {
+    font-size: 0.725rem;
+    font-weight: 600;
+    color: var(--font-color-tertiary);
+    margin: 32px 0 6px 28px;
+}
+
+.album-page > .album-content > .disc.first {
+    margin: 22px 0 6px 28px;
+}
+
+/* Responsive */
+@media only screen and (max-width: 390px) {
+    .album-page > .album-header {
+        margin-left: 0;
+    }
+}
+
+@media only screen and (max-width: 320px) {
+    .album-page > .album-header {
+        flex-direction: column;
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .album-page > .album-header > .thumbnail {
+        margin-right: 0;
+    }
+
+    .album-page > .album-header > .album-details {
+        text-align: center;
+    }
+
+    .album-page > .album-header > .album-details > .stats {
+        justify-content: center;
+    }
+
+    .album-page > .album-header > .album-details > .actions {
+        justify-content: center;
+    }
+}

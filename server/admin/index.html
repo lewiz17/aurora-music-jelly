@@ -1,0 +1,1225 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="robots" content="noindex, nofollow" />
+        <title>Aurora · Panel</title>
+        <style>
+            :root {
+                --bg: #0b0a12;
+                --panel: #12101c;
+                --panel-2: #1b1828;
+                --line: #2a2540;
+                --text: #ece9f7;
+                --muted: #9c97b5;
+                --brand: #7b5cff;
+                --brand-2: #22d3ee;
+                --ok: #1db954;
+                --warn: #ffb020;
+                --err: #ff5c6e;
+                --radius: 14px;
+                font-family:
+                    ui-sans-serif,
+                    system-ui,
+                    -apple-system,
+                    'Segoe UI',
+                    Roboto,
+                    sans-serif;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background:
+                    radial-gradient(1200px 600px at 10% -10%, rgba(123, 92, 255, 0.18), transparent 60%),
+                    radial-gradient(900px 500px at 110% 10%, rgba(34, 211, 238, 0.12), transparent 55%), var(--bg);
+                color: var(--text);
+                min-height: 100vh;
+            }
+            a {
+                color: var(--brand-2);
+            }
+            h1,
+            h2,
+            h3 {
+                margin: 0;
+                font-weight: 650;
+                letter-spacing: -0.02em;
+            }
+            button {
+                font: inherit;
+                cursor: pointer;
+                border-radius: 10px;
+                border: 1px solid var(--line);
+                background: var(--panel-2);
+                color: var(--text);
+                padding: 9px 14px;
+                transition:
+                    transform 0.08s ease,
+                    background 0.15s ease,
+                    border-color 0.15s ease;
+            }
+            button:hover {
+                background: #241f36;
+            }
+            button:active {
+                transform: translateY(1px);
+            }
+            button.primary {
+                background-image: linear-gradient(135deg, var(--brand), var(--brand-2));
+                border: none;
+                color: #fff;
+                font-weight: 600;
+            }
+            button.ghost {
+                background: transparent;
+            }
+            button.danger {
+                border-color: #5c1f26;
+                color: #ff8090;
+            }
+            button:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+            input,
+            select,
+            textarea {
+                font: inherit;
+                width: 100%;
+                padding: 10px 12px;
+                border-radius: 10px;
+                border: 1px solid var(--line);
+                background: #0e0c16;
+                color: var(--text);
+                outline: none;
+            }
+            input:focus,
+            select:focus {
+                border-color: var(--brand);
+                box-shadow: 0 0 0 3px rgba(123, 92, 255, 0.18);
+            }
+            label {
+                display: block;
+                font-size: 0.8rem;
+                color: var(--muted);
+                margin-bottom: 6px;
+            }
+            .shell {
+                max-width: 1080px;
+                margin: 0 auto;
+                padding: 28px 18px 80px;
+            }
+            header.top {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                margin-bottom: 26px;
+            }
+            .mark {
+                width: 40px;
+                height: 40px;
+                border-radius: 12px;
+                background-image: linear-gradient(135deg, var(--brand), var(--brand-2));
+                box-shadow: 0 8px 24px rgba(123, 92, 255, 0.35);
+            }
+            .top .grow {
+                flex: 1;
+            }
+            .top .sub {
+                color: var(--muted);
+                font-size: 0.85rem;
+            }
+            nav.tabs {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                margin-bottom: 22px;
+            }
+            nav.tabs button {
+                border: 1px solid transparent;
+                background: transparent;
+                color: var(--muted);
+            }
+            nav.tabs button.active {
+                background: var(--panel-2);
+                border-color: var(--line);
+                color: var(--text);
+            }
+            .card {
+                background: rgba(18, 16, 28, 0.85);
+                border: 1px solid var(--line);
+                border-radius: var(--radius);
+                padding: 20px;
+                margin-bottom: 18px;
+                backdrop-filter: blur(6px);
+            }
+            .card h2 {
+                font-size: 1.02rem;
+                margin-bottom: 4px;
+            }
+            .card p.hint {
+                color: var(--muted);
+                font-size: 0.85rem;
+                margin: 0 0 16px;
+                line-height: 1.5;
+            }
+            .row {
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+                align-items: flex-end;
+            }
+            .row > .field {
+                flex: 1 1 220px;
+            }
+            .grid-2 {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 14px;
+            }
+            .list {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .item {
+                display: flex;
+                gap: 14px;
+                align-items: center;
+                padding: 12px 14px;
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                background: #0e0c16;
+            }
+            .item .grow {
+                flex: 1;
+                min-width: 0;
+            }
+            .item .name {
+                font-weight: 600;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .item .meta {
+                color: var(--muted);
+                font-size: 0.8rem;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            code.code {
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                background: linear-gradient(135deg, rgba(123, 92, 255, 0.22), rgba(34, 211, 238, 0.16));
+                border: 1px solid rgba(123, 92, 255, 0.4);
+                padding: 3px 8px;
+                border-radius: 7px;
+                font-size: 0.85rem;
+                letter-spacing: 0.08em;
+            }
+            .badge {
+                font-size: 0.72rem;
+                padding: 2px 8px;
+                border-radius: 999px;
+                border: 1px solid var(--line);
+                color: var(--muted);
+            }
+            .badge.ok {
+                color: #6ee7a0;
+                border-color: #1d4b32;
+                background: #0e2418;
+            }
+            .badge.warn {
+                color: var(--warn);
+                border-color: #5c4418;
+                background: #221a08;
+            }
+            .badge.err {
+                color: #ff8f9b;
+                border-color: #5c1f26;
+                background: #240f12;
+            }
+            .slots {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 14px;
+            }
+            .slot {
+                border: 1px dashed var(--line);
+                border-radius: 12px;
+                padding: 12px;
+                text-align: center;
+                background: #0e0c16;
+            }
+            .slot .preview {
+                height: 84px;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: repeating-conic-gradient(#171424 0% 25%, #1d1a2c 0% 50%) 50% / 16px 16px;
+                overflow: hidden;
+            }
+            .slot .preview img {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+            }
+            .slot .label {
+                font-size: 0.82rem;
+                color: var(--muted);
+                margin-bottom: 8px;
+            }
+            .slot .actions {
+                display: flex;
+                gap: 6px;
+                justify-content: center;
+            }
+            .slot .actions button {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            .toast {
+                position: fixed;
+                bottom: 22px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #17142a;
+                border: 1px solid var(--line);
+                padding: 12px 18px;
+                border-radius: 12px;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+                font-size: 0.9rem;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.2s ease;
+                z-index: 50;
+            }
+            .toast.show {
+                opacity: 1;
+            }
+            .toast.err {
+                border-color: #5c1f26;
+                color: #ffb3bb;
+            }
+            .login-wrap {
+                max-width: 380px;
+                margin: 14vh auto;
+            }
+            .switch {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--text);
+                font-size: 0.9rem;
+                cursor: pointer;
+            }
+            .switch input {
+                width: auto;
+            }
+            table.tracks {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.86rem;
+            }
+            table.tracks th {
+                text-align: left;
+                color: var(--muted);
+                font-weight: 500;
+                font-size: 0.76rem;
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+                padding: 8px;
+                border-bottom: 1px solid var(--line);
+            }
+            table.tracks td {
+                padding: 8px;
+                border-bottom: 1px solid #16131f;
+                vertical-align: middle;
+            }
+            table.tracks tr:hover td {
+                background: #100e19;
+            }
+            .score {
+                font-family: ui-monospace, monospace;
+                font-size: 0.78rem;
+            }
+            .empty {
+                color: var(--muted);
+                font-size: 0.9rem;
+                padding: 14px 2px;
+            }
+            .spinner {
+                width: 16px;
+                height: 16px;
+                border: 2px solid rgba(255, 255, 255, 0.25);
+                border-top-color: #fff;
+                border-radius: 50%;
+                display: inline-block;
+                animation: spin 0.8s linear infinite;
+                vertical-align: -3px;
+                margin-right: 8px;
+            }
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+            .steps {
+                counter-reset: step;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                color: var(--muted);
+                font-size: 0.88rem;
+                line-height: 1.5;
+            }
+            .steps > div::before {
+                counter-increment: step;
+                content: counter(step);
+                display: inline-flex;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                background: rgba(123, 92, 255, 0.2);
+                border: 1px solid rgba(123, 92, 255, 0.45);
+                color: #cbbcff;
+                font-size: 0.72rem;
+                align-items: center;
+                justify-content: center;
+                margin-right: 8px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="root"></div>
+        <div class="toast" id="toast"></div>
+        <script>
+            // ---------------------------------------------------------------------------
+            // Aurora admin panel — dependency free, single file.
+            // ---------------------------------------------------------------------------
+            const state = {
+                view: 'login',
+                tab: 'servers',
+                settings: {},
+                servers: [],
+                assets: {},
+                themes: [],
+                imports: [],
+                importDetail: null,
+                busy: false,
+            }
+
+            const root = document.getElementById('root')
+            const toastEl = document.getElementById('toast')
+            const h = (tag, attrs = {}, ...children) => {
+                const el = document.createElement(tag)
+                for (const [key, value] of Object.entries(attrs)) {
+                    if (key === 'class') el.className = value
+                    else if (key === 'html') el.innerHTML = value
+                    else if (key.startsWith('on') && typeof value === 'function') el.addEventListener(key.slice(2).toLowerCase(), value)
+                    else if (value !== undefined && value !== null && value !== false) el.setAttribute(key, value)
+                }
+                for (const child of children.flat()) {
+                    if (child === null || child === undefined || child === false) continue
+                    el.append(child instanceof Node ? child : document.createTextNode(String(child)))
+                }
+                return el
+            }
+
+            const toast = (message, isError = false) => {
+                toastEl.textContent = message
+                toastEl.className = `toast show${isError ? ' err' : ''}`
+                clearTimeout(toast._t)
+                toast._t = setTimeout(() => (toastEl.className = 'toast'), 3200)
+            }
+
+            const TOKEN_KEY = 'aurora_admin_token'
+            // Storage can throw or be unavailable (sandboxed iframes, private modes): never let that break login.
+            const memory = { token: '' }
+            const safeStorage = name => {
+                try {
+                    const store = window[name]
+                    const probe = '__aurora_probe__'
+                    store.setItem(probe, '1')
+                    store.removeItem(probe)
+                    return store
+                } catch {
+                    return null
+                }
+            }
+            const storeToken = token => {
+                memory.token = token
+                for (const name of ['sessionStorage', 'localStorage']) {
+                    try {
+                        safeStorage(name)?.setItem(TOKEN_KEY, token)
+                    } catch {
+                        /* ignore */
+                    }
+                }
+            }
+            const clearToken = () => {
+                memory.token = ''
+                for (const name of ['sessionStorage', 'localStorage']) {
+                    try {
+                        safeStorage(name)?.removeItem(TOKEN_KEY)
+                    } catch {
+                        /* ignore */
+                    }
+                }
+            }
+            const getToken = () => {
+                if (memory.token) return memory.token
+                for (const name of ['sessionStorage', 'localStorage']) {
+                    try {
+                        const value = safeStorage(name)?.getItem(TOKEN_KEY)
+                        if (value) return value
+                    } catch {
+                        /* ignore */
+                    }
+                }
+                return ''
+            }
+
+            const api = async (path, options = {}) => {
+                const headers = options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }
+                const token = getToken()
+                // The token goes in a header so the panel works even when cookies are blocked
+                if (token) headers.Authorization = `Bearer ${token}`
+                const response = await fetch(`/admin${path}`, {
+                    headers,
+                    credentials: 'same-origin',
+                    ...options,
+                    // keep our merged headers
+                    ...(options.headers ? {} : {}),
+                })
+                const text = await response.text()
+                let data = {}
+                try {
+                    data = text ? JSON.parse(text) : {}
+                } catch {
+                    data = {}
+                }
+                if (response.status === 401 && path !== '/api/login') {
+                    clearToken()
+                    state.view = 'login'
+                    renderLogin()
+                    throw new Error('Sesión caducada, vuelve a entrar.')
+                }
+                if (!response.ok) throw new Error(data.message || data.error || `Error ${response.status}`)
+                return data
+            }
+
+            /** Login helper that works with or without cookie support. */
+            const login = async (username, password) => {
+                const response = await fetch('/admin/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ username, password }),
+                })
+                const text = await response.text()
+                let data = {}
+                try {
+                    data = text ? JSON.parse(text) : {}
+                } catch {
+                    data = {}
+                }
+                if (!response.ok) throw new Error(data.message || `Error ${response.status}`)
+                if (data.token) {
+                    storeToken(data.token)
+                }
+                return data
+            }
+
+            // ---------------- login ----------------
+            const renderLogin = () => {
+                const username = h('input', { placeholder: 'Usuario', value: 'admin', autocomplete: 'username' })
+                const password = h('input', { type: 'password', placeholder: 'Contraseña', autocomplete: 'current-password' })
+                const error = h('div', { class: 'empty' })
+
+                const submit = async event => {
+                    event.preventDefault()
+                    if (state.busy) return
+                    state.busy = true
+                    error.textContent = ''
+                    try {
+                        await login(username.value, password.value)
+                        await boot()
+                    } catch (err) {
+                        error.textContent = err.message
+                    } finally {
+                        state.busy = false
+                    }
+                }
+
+                for (const input of [username, password]) {
+                    input.addEventListener('keydown', event => {
+                        if (event.key === 'Enter') submit(event)
+                    })
+                }
+
+                root.replaceChildren(
+                    h(
+                        'div',
+                        { class: 'shell login-wrap' },
+                        h('header', { class: 'top' }, h('div', { class: 'mark' }), h('div', {}, h('h1', {}, 'Aurora'), h('div', { class: 'sub' }, 'Panel de administración'))),
+                        h(
+                            'div',
+                            { class: 'card' },
+                            h('h2', {}, 'Entrar'),
+                            h('p', { class: 'hint' }, 'Usa el usuario y la contraseña del panel (ADMIN_USER / ADMIN_PASSWORD).'),
+                            h('div', { class: 'field', style: 'margin-bottom:12px' }, h('label', {}, 'Usuario'), username),
+                            h('div', { class: 'field', style: 'margin-bottom:16px' }, h('label', {}, 'Contraseña'), password),
+                            // A real <form> is blocked inside sandboxed iframes (no allow-forms),
+                            // so the button is a plain click/submit handler.
+                            h('button', { class: 'primary', type: 'button', onclick: submit }, 'Entrar'),
+                            error
+                        )
+                    )
+                )
+                password.focus()
+            }
+
+            // ---------------- tabs ----------------
+            const TABS = [
+                ['servers', 'Servidores y códigos'],
+                ['branding', 'Marca y logos'],
+                ['appearance', 'Aspecto'],
+                ['imports', 'Listas de YouTube Music'],
+            ]
+
+            const renderShell = () => {
+                const content = {
+                    servers: renderServers,
+                    branding: renderBranding,
+                    appearance: renderAppearance,
+                    imports: renderImports,
+                }[state.tab]
+
+                root.replaceChildren(
+                    h(
+                        'div',
+                        { class: 'shell' },
+                        h(
+                            'header',
+                            { class: 'top' },
+                            h('div', { class: 'mark' }),
+                            h(
+                                'div',
+                                { class: 'grow' },
+                                h('h1', {}, state.settings.brandName || 'Aurora'),
+                                h('div', { class: 'sub' }, 'Panel de administración')
+                            ),
+                            h(
+                                'button',
+                                {
+                                    class: 'ghost',
+                                    onclick: async () => {
+                                        try {
+                                            await api('/api/logout', { method: 'POST' })
+                                        } catch {
+                                            /* ignore */
+                                        }
+                                        clearToken()
+                                        state.view = 'login'
+                                        renderLogin()
+                                    },
+                                },
+                                'Salir'
+                            )
+                        ),
+                        h(
+                            'nav',
+                            { class: 'tabs' },
+                            TABS.map(([id, label]) =>
+                                h(
+                                    'button',
+                                    {
+                                        class: state.tab === id ? 'active' : '',
+                                        onclick: () => {
+                                            state.tab = id
+                                            renderShell()
+                                        },
+                                    },
+                                    label
+                                )
+                            )
+                        ),
+                        content()
+                    )
+                )
+            }
+
+            // ---------------- servers ----------------
+            const renderServers = () => {
+                const urlInput = h('input', { placeholder: 'https://jellyfin.midominio.com', id: 'srv-url' })
+                const labelInput = h('input', { placeholder: 'Casa' })
+                const codeInput = h('input', { placeholder: 'Automático', maxlength: '12' })
+                const apiKeyInput = h('input', { placeholder: 'Opcional: clave para el importador', type: 'password' })
+                const out = h('div', { class: 'list', id: 'srv-list' })
+
+                const create = async () => {
+                    try {
+                        const server = await api('/api/servers', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                jellyfinUrl: urlInput.value,
+                                label: labelInput.value,
+                                code: codeInput.value,
+                            }),
+                        })
+                        toast(`Servidor añadido. Código: ${server.code}`)
+                        await refresh()
+                    } catch (err) {
+                        toast(err.message, true)
+                    }
+                }
+
+                const items = state.servers.map(server => {
+                    const codeField = h('input', { value: server.code, style: 'max-width:140px;text-transform:uppercase' })
+                    const labelField = h('input', { value: server.label || '' })
+                    const keyField = h('input', {
+                        value: server.apiKey ? '••••••••' : '',
+                        placeholder: 'Clave API',
+                        type: 'password',
+                        style: 'max-width:180px',
+                    })
+                    const status = h('span', { class: 'badge' }, 'sin probar')
+
+                    const save = async () => {
+                        const payload = {
+                            code: codeField.value,
+                            label: labelField.value,
+                            active: server.active !== false,
+                        }
+                        if (keyField.value && !keyField.value.includes('•')) payload.apiKey = keyField.value
+                        try {
+                            await api(`/api/servers/${server.id}`, { method: 'PUT', body: JSON.stringify(payload) })
+                            toast('Guardado')
+                            await refresh()
+                        } catch (err) {
+                            toast(err.message, true)
+                        }
+                    }
+
+                    const test = async () => {
+                        status.textContent = 'probando…'
+                        status.className = 'badge'
+                        try {
+                            const result = await api(`/api/servers/${server.id}/test`, { method: 'POST' })
+                            status.textContent = `${result.name} · v${result.version}`
+                            status.className = 'badge ok'
+                        } catch (err) {
+                            status.textContent = 'sin conexión'
+                            status.className = 'badge err'
+                            toast(err.message, true)
+                        }
+                    }
+
+                    const remove = async () => {
+                        if (!confirm('¿Eliminar este servidor? Los usuarios con su código dejarán de entrar.')) return
+                        await api(`/api/servers/${server.id}`, { method: 'DELETE' })
+                        await refresh()
+                    }
+
+                    return h(
+                        'div',
+                        { class: 'item', style: 'flex-wrap:wrap' },
+                        h(
+                            'div',
+                            { class: 'grow', style: 'min-width:220px' },
+                            h('div', { class: 'meta' }, server.jellyfinUrl),
+                            h('div', { style: 'display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap' },
+                                h('code', { class: 'code' }, server.code),
+                                status
+                            )
+                        ),
+                        h('div', { style: 'display:flex;gap:8px;flex-wrap:wrap;align-items:center' },
+                            h('div', {}, h('label', {}, 'Código'), codeField),
+                            h('div', {}, h('label', {}, 'Etiqueta'), labelField),
+                            h('div', {}, h('label', {}, 'Clave API (importador)'), keyField),
+                            h('button', { onclick: save }, 'Guardar'),
+                            h('button', { onclick: test }, 'Probar'),
+                            h('button', { class: 'danger', onclick: remove }, 'Eliminar')
+                        )
+                    )
+                })
+
+                out.replaceChildren(...(items.length ? items : [h('div', { class: 'empty' }, 'Todavía no hay servidores.')]))
+
+                return h(
+                    'div',
+                    {},
+                    h(
+                        'div',
+                        { class: 'card' },
+                        h('h2', {}, 'Añadir servidor'),
+                        h(
+                            'p',
+                            { class: 'hint' },
+                            'La URL real nunca llega al navegador de tus familiares: solo comparten el código.'
+                        ),
+                        h(
+                            'div',
+                            { class: 'row' },
+                            h('div', { class: 'field' }, h('label', {}, 'URL del servidor'), urlInput),
+                            h('div', { class: 'field', style: 'max-width:180px' }, h('label', {}, 'Etiqueta'), labelInput),
+                            h('div', { class: 'field', style: 'max-width:160px' }, h('label', {}, 'Código (opcional)'), codeInput),
+                            h('button', { class: 'primary', onclick: create }, 'Añadir')
+                        )
+                    ),
+                    h(
+                        'div',
+                        { class: 'card' },
+                        h('h2', {}, 'Servidores'),
+                        h(
+                            'p',
+                            { class: 'hint' },
+                            'La clave API solo se usa en el panel, para buscar en la biblioteca al importar listas. Créala en Jellyfin → Panel → Claves API.'
+                        ),
+                        h('div', { id: 'srv-list-slot' }, out)
+                    )
+                )
+            }
+
+            // ---------------- branding ----------------
+            const SLOTS = [
+                ['logo', 'Logo principal', 'Se usa en el inicio de sesión y en el menú lateral.'],
+                ['logoDark', 'Logo para modo oscuro', 'Opcional: si no se sube, se usa el principal.'],
+                ['icon', 'Icono de la app', 'Icono de la pestaña y de la app instalada (PWA).'],
+                ['loginBackground', 'Fondo del inicio de sesión', 'Imagen de fondo opcional (se oscurece sola).'],
+                ['albumPlaceholder', 'Portada por defecto', 'Sustituye la carátula genérica de álbumes.'],
+                ['artistPlaceholder', 'Imagen de artista', 'Sustituye la imagen genérica de artistas.'],
+            ]
+
+            const renderBranding = () => {
+                const slots = SLOTS.map(([slot, name, hint]) => {
+                    const current = state.assets[slot]
+                    const preview = h('div', { class: 'preview' })
+                    if (current) {
+                        preview.append(h('img', { src: `${current}?v=${Date.now()}`, alt: name }))
+                    } else {
+                        preview.append(h('span', { style: 'color:#6b6685;font-size:.78rem' }, 'sin imagen'))
+                    }
+                    const fileInput = h('input', {
+                        type: 'file',
+                        accept: 'image/png,image/jpeg,image/webp,image/svg+xml,image/avif',
+                        style: 'display:none',
+                    })
+
+                    fileInput.addEventListener('change', async () => {
+                        const file = fileInput.files?.[0]
+                        if (!file) return
+                        const body = new FormData()
+                        body.append('file', file)
+                        try {
+                            await api(`/api/assets/${slot}`, { method: 'POST', body })
+                            toast('Imagen actualizada')
+                            await refresh()
+                        } catch (err) {
+                            toast(err.message, true)
+                        }
+                    })
+
+                    const remove = async () => {
+                        await api(`/api/assets/${slot}`, { method: 'DELETE' })
+                        await refresh()
+                    }
+
+                    return h(
+                        'div',
+                        { class: 'slot' },
+                        preview,
+                        h('div', { class: 'label' }, name),
+                        h('div', { style: 'font-size:.72rem;color:#6b6685;margin-bottom:10px;line-height:1.4' }, hint),
+                        h(
+                            'div',
+                            { class: 'actions' },
+                            h('button', { onclick: () => fileInput.click() }, current ? 'Cambiar' : 'Subir'),
+                            current ? h('button', { class: 'danger', onclick: remove }, 'Quitar') : null
+                        ),
+                        fileInput
+                    )
+                })
+
+                return h(
+                    'div',
+                    {},
+                    h(
+                        'div',
+                        { class: 'card' },
+                        h('h2', {}, 'Marca'),
+                        h('p', { class: 'hint' }, 'Sube tus propios logos. Si no subes ninguno, se usan degradados del tema.'),
+                        h(
+                            'div',
+                            { class: 'row' },
+                            h(
+                                'div',
+                                { class: 'field' },
+                                h('label', {}, 'Nombre de la app'),
+                                (() => {
+                                    const input = h('input', { value: state.settings.brandName || '' })
+                                    input.addEventListener('change', async () => {
+                                        await api('/api/settings', {
+                                            method: 'PUT',
+                                            body: JSON.stringify({ brandName: input.value }),
+                                        })
+                                        toast('Nombre guardado')
+                                        await refresh()
+                                    })
+                                    return input
+                                })()
+                            ),
+                            h(
+                                'div',
+                                { class: 'field' },
+                                h('label', {}, 'Texto del campo de código'),
+                                (() => {
+                                    const input = h('input', { value: state.settings.codeFieldPlaceholder || '' })
+                                    input.addEventListener('change', async () => {
+                                        await api('/api/settings', {
+                                            method: 'PUT',
+                                            body: JSON.stringify({ codeFieldPlaceholder: input.value }),
+                                        })
+                                        toast('Guardado')
+                                    })
+                                    return input
+                                })()
+                            )
+                        )
+                    ),
+                    h('div', { class: 'card' }, h('h2', {}, 'Imágenes'), h('p', { class: 'hint' }, 'PNG, JPG, WebP o SVG. Máximo 4 MB (12 MB el fondo).'), h('div', { class: 'slots' }, slots))
+                )
+            }
+
+            // ---------------- appearance ----------------
+            const renderAppearance = () => {
+                const themeSelect = h(
+                    'select',
+                    {},
+                    state.themes.map(theme => h('option', { value: theme.id, selected: theme.id === state.settings.defaultTheme }, theme.name))
+                )
+                themeSelect.addEventListener('change', async () => {
+                    await api('/api/settings', { method: 'PUT', body: JSON.stringify({ defaultTheme: themeSelect.value }) })
+                    toast('Tema por defecto actualizado')
+                })
+
+                const languageSelect = h(
+                    'select',
+                    {},
+                    h('option', { value: 'es', selected: state.settings.defaultLanguage === 'es' }, 'Español'),
+                    h('option', { value: 'en', selected: state.settings.defaultLanguage === 'en' }, 'English')
+                )
+                languageSelect.addEventListener('change', async () => {
+                    await api('/api/settings', { method: 'PUT', body: JSON.stringify({ defaultLanguage: languageSelect.value }) })
+                    toast('Idioma por defecto actualizado')
+                })
+
+                const hideAbout = h('input', { type: 'checkbox', checked: state.settings.hideAbout !== false })
+                hideAbout.addEventListener('change', async () => {
+                    await api('/api/settings', { method: 'PUT', body: JSON.stringify({ hideAbout: hideAbout.checked }) })
+                })
+
+                return h(
+                    'div',
+                    {},
+                    h(
+                        'div',
+                        { class: 'card' },
+                        h('h2', {}, 'Tema por defecto'),
+                        h('p', { class: 'hint' }, 'Cada usuario puede cambiarlo luego en Ajustes → Tema. Los temas son degradados, sin logos.'),
+                        h('div', { class: 'grid-2' },
+                            h('div', {}, h('label', {}, 'Tema'), themeSelect),
+                            h('div', {}, h('label', {}, 'Idioma'), languageSelect)
+                        ),
+                        h('div', { class: 'slots', style: 'margin-top:16px' },
+                            state.themes.map(theme =>
+                                h(
+                                    'div',
+                                    { class: 'slot', style: 'cursor:pointer' },
+                                    h('div', {
+                                        class: 'preview',
+                                        style: `background-image:linear-gradient(135deg, ${theme.swatch[0]}, ${theme.swatch[1]})`,
+                                    }),
+                                    h('div', { class: 'label' }, theme.name)
+                                )
+                            )
+                        )
+                    ),
+                    h(
+                        'div',
+                        { class: 'card' },
+                        h('h2', {}, 'Privacidad de la marca'),
+                        h('p', { class: 'hint' }, 'Oculta la sección “About” y todo lo que identifique el motor detrás de la app.'),
+                        h('label', { class: 'switch' }, hideAbout, 'Ocultar información “About” en Ajustes')
+                    )
+                )
+            }
+
+            // ---------------- imports ----------------
+            const statusBadge = status => {
+                if (status === 'auto') return h('span', { class: 'badge ok' }, 'emparejada')
+                if (status === 'review') return h('span', { class: 'badge warn' }, 'revisar')
+                return h('span', { class: 'badge err' }, 'no encontrada')
+            }
+
+            const renderImports = () => {
+                const urlInput = h('input', { placeholder: 'https://music.youtube.com/playlist?list=…' })
+                const serverSelect = h(
+                    'select',
+                    {},
+                    state.servers.map(server =>
+                        h('option', { value: server.id, selected: server.id === state.importServerId }, `${server.label || server.jellyfinUrl} (${server.code})`)
+                    )
+                )
+                serverSelect.addEventListener('change', () => (state.importServerId = serverSelect.value))
+                state.importServerId = state.importServerId || state.servers[0]?.id
+
+                const run = async () => {
+                    if (!urlInput.value.trim()) return toast('Pega un enlace de YouTube Music', true)
+                    state.busy = true
+                    renderShell()
+                    try {
+                        const record = await api('/api/imports', {
+                            method: 'POST',
+                            body: JSON.stringify({ url: urlInput.value.trim(), serverId: serverSelect.value }),
+                        })
+                        state.importDetail = record
+                        toast(`${record.tracks.length} pistas leídas`)
+                        await refresh()
+                    } catch (err) {
+                        toast(err.message, true)
+                    } finally {
+                        state.busy = false
+                        renderShell()
+                    }
+                }
+
+                const detail = state.importDetail
+                let detailNode = null
+
+                if (detail) {
+                    const rows = detail.tracks.map((track, index) => {
+                        const options = (track.candidates || []).map(candidate =>
+                            h(
+                                'option',
+                                { value: candidate.itemId, selected: candidate.itemId === track.chosenId },
+                                `${candidate.name} — ${candidate.artist} (${candidate.score})`
+                            )
+                        )
+                        const select = h(
+                            'select',
+                            {},
+                            h('option', { value: '' }, '— sin coincidencia —'),
+                            options
+                        )
+                        select.addEventListener('change', async () => {
+                            await api(`/api/imports/${detail.id}`, {
+                                method: 'PUT',
+                                body: JSON.stringify({ overrides: { [index]: select.value || null } }),
+                            })
+                            track.chosenId = select.value || null
+                            track.status = select.value ? 'auto' : 'none'
+                        })
+
+                        return h(
+                            'tr',
+                            {},
+                            h('td', { style: 'color:#6b6685;width:28px' }, index + 1),
+                            h('td', {}, h('div', { style: 'font-weight:600' }, track.title), h('div', { class: 'meta' }, track.artist)),
+                            h('td', { style: 'min-width:260px' }, select),
+                            h('td', {}, statusBadge(track.status)),
+                            h('td', { class: 'score', style: 'text-align:right' }, track.score?.toFixed(2) ?? '—')
+                        )
+                    })
+
+                    const nameInput = h('input', { value: detail.title, style: 'max-width:320px' })
+
+                    const apply = async () => {
+                        try {
+                            const result = await api(`/api/imports/${detail.id}/apply`, {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                    serverId: detail.serverId,
+                                    playlistName: nameInput.value,
+                                    mode: 'create',
+                                }),
+                            })
+                            toast(`Lista creada con ${result.added} canciones`)
+                        } catch (err) {
+                            toast(err.message, true)
+                        }
+                    }
+
+                    const matched = detail.tracks.filter(track => track.chosenId).length
+
+                    detailNode = h(
+                        'div',
+                        { class: 'card' },
+                        h('h2', {}, detail.title),
+                        h(
+                            'p',
+                            { class: 'hint' },
+                            `${detail.tracks.length} pistas · ${matched} emparejadas · ${detail.tracks.length - matched} sin coincidencia. Revisa las dudosas antes de crear la lista.`
+                        ),
+                        h(
+                            'div',
+                            { class: 'row', style: 'margin-bottom:14px' },
+                            h('div', { class: 'field' }, h('label', {}, 'Nombre de la lista en Jellyfin'), nameInput),
+                            h('button', { class: 'primary', onclick: apply }, `Crear lista (${matched} canciones)`)
+                        ),
+                        h(
+                            'div',
+                            { style: 'overflow:auto' },
+                            h(
+                                'table',
+                                { class: 'tracks' },
+                                h('thead', {}, h('tr', {}, h('th', {}, '#'), h('th', {}, 'YouTube Music'), h('th', {}, 'En tu biblioteca'), h('th', {}, 'Estado'), h('th', { style: 'text-align:right' }, 'Score'))),
+                                h('tbody', {}, rows)
+                            )
+                        )
+                    )
+                }
+
+                const history = state.imports.map(item =>
+                    h(
+                        'div',
+                        { class: 'item' },
+                        h('div', { class: 'grow' }, h('div', { class: 'name' }, item.title), h('div', { class: 'meta' }, `${item.total} pistas · ${item.matched} emparejadas · ${new Date(item.createdAt).toLocaleString('es-CO')}`)),
+                        h('button', {
+                            onclick: async () => {
+                                state.importDetail = await api(`/api/imports/${item.id}`)
+                                renderShell()
+                            },
+                        }, 'Abrir')
+                    )
+                )
+
+                const jfUser = h('input', { placeholder: 'Usuario del servidor', autocomplete: 'off' })
+                const jfPass = h('input', { placeholder: 'Contraseña', type: 'password', autocomplete: 'new-password' })
+                const jfStatus = h('div', { class: 'empty' }, 'Comprobando conexión…')
+
+                const refreshStatus = async () => {
+                    if (!serverSelect.value) return
+                    try {
+                        const st = await api(`/api/jellyfin/status/${serverSelect.value}`)
+                        jfStatus.textContent = st.connected
+                            ? `Conectado${st.username ? ` como ${st.username}` : ''}${st.viaApiKey ? ' (vía clave API)' : ''}`
+                            : 'Sin conexión: conecta tu cuenta para poder crear listas'
+                    } catch {
+                        jfStatus.textContent = 'Sin conexión'
+                    }
+                }
+
+                const connect = async () => {
+                    try {
+                        await api('/api/jellyfin/login', {
+                            method: 'POST',
+                            body: JSON.stringify({ serverId: serverSelect.value, username: jfUser.value, password: jfPass.value }),
+                        })
+                        toast('Cuenta conectada')
+                        await refreshStatus()
+                    } catch (err) {
+                        toast(err.message, true)
+                    }
+                }
+
+                setTimeout(refreshStatus, 0)
+                serverSelect.addEventListener('change', refreshStatus)
+
+                return h(
+                    'div',
+                    {},
+                    h(
+                        'div',
+                        { class: 'card' },
+                        h('h2', {}, 'Tu cuenta del servidor'),
+                        h('p', { class: 'hint' }, 'Necesaria para crear las listas dentro de la app. Se guarda solo en memoria del servidor; si reinicias, vuelve a conectarte (o usa una clave API en la pestaña de servidores).'),
+                        h(
+                            'div',
+                            { class: 'row' },
+                            h('div', { class: 'field', style: 'max-width:220px' }, h('label', {}, 'Usuario'), jfUser),
+                            h('div', { class: 'field', style: 'max-width:220px' }, h('label', {}, 'Contraseña'), jfPass),
+                            h('button', { onclick: connect }, 'Conectar')
+                        ),
+                        jfStatus
+                    ),
+                    h(
+                        'div',
+                        { class: 'card' },
+                        h('h2', {}, 'Importar desde YouTube Music'),
+                        h('p', { class: 'hint' }, 'Pega el enlace de una lista pública. Buscamos cada canción en tu biblioteca y te dejamos revisar las coincidencias dudosas antes de crear la lista.'),
+                        state.busy ? h('div', { class: 'empty' }, h('span', { class: 'spinner' }), 'Leyendo la lista y buscando coincidencias… puede tardar un minuto.') : null,
+                        h(
+                            'div',
+                            { class: 'row' },
+                            h('div', { class: 'field' }, h('label', {}, 'Enlace de la lista'), urlInput),
+                            h('div', { class: 'field', style: 'max-width:260px' }, h('label', {}, 'Servidor'), serverSelect),
+                            h('button', { class: 'primary', onclick: run, disabled: state.busy ? 'disabled' : null }, 'Leer y emparejar')
+                        )
+                    ),
+                    detailNode,
+                    h('div', { class: 'card' }, h('h2', {}, 'Importaciones'), history.length ? h('div', { class: 'list' }, history) : h('div', { class: 'empty' }, 'Aún no has importado ninguna lista.'))
+                )
+            }
+
+            // ---------------- boot ----------------
+            const refresh = async () => {
+                const data = await api('/api/state')
+                state.settings = data.settings
+                state.servers = data.servers
+                state.assets = data.assets
+                state.themes = data.themes
+                state.imports = data.imports
+                renderShell()
+            }
+
+            const boot = async () => {
+                const token = getToken()
+                const me = await fetch('/admin/api/me', {
+                    credentials: 'same-origin',
+                    headers: token ? { Authorization: `Bearer ${token}` } : {},
+                })
+                    .then(r => r.json())
+                    .catch(() => ({ authenticated: false, configured: true }))
+                if (!me.configured) {
+                    root.replaceChildren(
+                        h('div', { class: 'shell login-wrap' }, h('div', { class: 'card' }, h('h2', {}, 'Falta configurar el panel'), h('p', { class: 'hint' }, 'Define ADMIN_PASSWORD en las variables de entorno del contenedor y reinicia.')))
+                    )
+                    return
+                }
+                if (!me.authenticated && !token) return renderLogin()
+                if (!me.authenticated && token) {
+                    // Token invalid or expired
+                    clearToken()
+                    return renderLogin()
+                }
+                await refresh()
+            }
+
+            boot().catch(err => {
+                root.replaceChildren(
+                    h(
+                        'div',
+                        { class: 'shell login-wrap' },
+                        h(
+                            'div',
+                            { class: 'card' },
+                            h('h2', {}, 'No se pudo cargar el panel'),
+                            h('p', { class: 'hint' }, err.message || 'Revisa que el servidor esté funcionando.'),
+                            h(
+                                'button',
+                                { class: 'primary', onclick: () => location.reload() },
+                                'Reintentar'
+                            )
+                        )
+                    )
+                )
+            })
+        </script>
+    </body>
+</html>

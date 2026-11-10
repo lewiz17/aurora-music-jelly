@@ -1,0 +1,10 @@
+# Local packages and built application
+node_modules
+dist
+
+# Documentation
+LICENSE
+README.md
+
+# Docker files
+Dockerfile

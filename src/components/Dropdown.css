@@ -1,0 +1,568 @@
+.dropdown,
+.sub-dropdown {
+    position: absolute;
+    z-index: 5;
+}
+
+.dropdown {
+    transform: scale(0.92);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity 0.2s ease-out,
+        visibility 0.2s ease-out,
+        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+.dropdown.active {
+    transform: scale(1);
+    opacity: 1;
+    visibility: visible;
+}
+
+.sub-dropdown {
+    top: -4px !important;
+    left: 100% !important;
+}
+
+.sub-dropdown.flip-x {
+    left: auto !important;
+    right: 100% !important;
+}
+
+.sub-dropdown.flip-y {
+    top: unset !important;
+    bottom: -4px !important;
+}
+
+.dropdown > .dropdown-menu {
+    min-width: 170px;
+    max-width: 210px;
+}
+
+.dropdown > .dropdown-menu,
+.sub-dropdown > .dropdown-menu {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    cursor: initial;
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    box-shadow: var(--dropdown-shadow);
+}
+
+.sub-dropdown > .dropdown-menu {
+    width: max-content;
+    max-width: 210px;
+    max-height: 42dvh;
+    overflow: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+.dropdown > .dropdown-menu > .dropdown-separator,
+.sub-dropdown > .dropdown-menu > .dropdown-separator {
+    flex-shrink: 0;
+    width: calc(100% - 16px);
+    height: 1px;
+    margin: 2px 8px;
+    background-color: var(--border-color);
+    transition: width 0.04s ease-out;
+}
+
+.sub-dropdown > .dropdown-menu > .dropdown-item:has(.playlist-input.has-text) ~ .dropdown-separator {
+    width: calc(100% - 10px);
+}
+
+.dropdown > .dropdown-menu > .dropdown-item,
+.sub-dropdown > .dropdown-menu > .dropdown-item {
+    position: relative;
+    font-size: 0.75rem;
+    font-weight: 500;
+    /* Help with CJK letter spacing - unitless to account for padding */
+    line-height: 1.25;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition:
+        background-color 0.2s ease-out,
+        opacity 0.2s ease-out;
+}
+
+.dropdown > .dropdown-menu > .dropdown-item:hover,
+.sub-dropdown > .dropdown-menu > .dropdown-item:hover {
+    background-color: var(--bg-color-tertiary);
+}
+
+.dropdown > .dropdown-menu > .dropdown-item.active {
+    background-color: var(--bg-color-tertiary);
+}
+
+.dropdown > .dropdown-menu > .dropdown-item.has-removable {
+    color: var(--font-color-error-light);
+}
+
+.dropdown > .dropdown-menu > .dropdown-item.add-favorite {
+    color: var(--brand-color);
+}
+
+.dropdown > .dropdown-menu > .dropdown-item.disabled {
+    opacity: 0.3;
+    cursor: initial;
+    background-color: unset !important;
+}
+
+.dropdown > .dropdown-menu > .dropdown-item > .icon {
+    margin-right: -4px;
+}
+
+.dropdown > .dropdown-menu > .dropdown-item > .inline-loader,
+.sub-dropdown > .dropdown-menu > .dropdown-item > .inline-loader {
+    margin-left: 10px;
+    cursor: initial;
+    user-select: none;
+    pointer-events: none;
+}
+
+.dropdown > .dropdown-menu > .dropdown-item > .inline-loader > .loading > circle,
+.sub-dropdown > .dropdown-menu > .dropdown-item > .inline-loader > .loading > circle {
+    transition: stroke 0.2s ease-out;
+}
+
+.dropdown > .dropdown-menu > .dropdown-item:hover > .inline-loader > .loading > circle:nth-child(1),
+.sub-dropdown > .dropdown-menu > .dropdown-item:hover > .inline-loader > .loading > circle:nth-child(1) {
+    stroke: var(--bg-color-quaternary);
+}
+
+.sub-dropdown > .dropdown-menu > .dropdown-item:has(.playlist-input.has-text) ~ .dropdown-item {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.sub-dropdown > .dropdown-menu > .dropdown-item:has(.playlist-input-container) {
+    padding: unset;
+    background-color: unset !important;
+}
+
+.sub-dropdown > .dropdown-menu > .dropdown-item:has(.playlist-input-container) > .inline-loader {
+    position: absolute;
+    right: 10px;
+}
+
+.sub-dropdown > .dropdown-menu > .dropdown-item > .playlist-input-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.sub-dropdown > .dropdown-menu > .dropdown-item > .playlist-input-container > .playlist-input {
+    font: inherit;
+    position: relative;
+    flex: 1;
+    width: 180px;
+    padding: 4px 10px;
+    background: transparent;
+    text-overflow: ellipsis;
+}
+
+.sub-dropdown
+    > .dropdown-menu:not(:has(> .dropdown-separator))
+    > .dropdown-item:has(> .playlist-input-container.new-item)
+    > .playlist-input-container.new-item
+    > .playlist-input {
+    padding-left: 4px;
+}
+
+.sub-dropdown > .dropdown-menu > .dropdown-item > .playlist-input-container.rename-item > .playlist-input {
+    padding-left: 4px;
+    padding-right: 16px;
+}
+
+.sub-dropdown > .dropdown-menu > .dropdown-item > .playlist-input-container > .playlist-input::placeholder {
+    font: inherit;
+}
+
+.sub-dropdown > .dropdown-menu > .dropdown-item > .playlist-input-container > .playlist-input.has-text {
+    max-width: calc(100% - 54px);
+}
+
+.sub-dropdown
+    > .dropdown-menu
+    > .dropdown-item:has(.inline-loader)
+    > .playlist-input-container
+    > .playlist-input.has-text {
+    width: 168px;
+    max-width: calc(100% - 16px);
+}
+
+.sub-dropdown > .dropdown-menu > .dropdown-item > .playlist-input-container > .playlist-input.has-text ~ .create-btn {
+    opacity: 1;
+    visibility: visible;
+}
+
+.sub-dropdown > .dropdown-menu > .dropdown-item > .playlist-input-container > .create-btn {
+    position: absolute;
+    right: 2px;
+    opacity: 0;
+    visibility: hidden;
+    font-size: 0.725rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 3px 7px;
+    border: none;
+    border-radius: 4px;
+    background: var(--bg-color-tertiary);
+    color: var(--font-color);
+    transition:
+        background-color 0.2s ease-out,
+        opacity 0.2s ease-out,
+        visibility 0.2s ease-out;
+}
+
+.sub-dropdown > .dropdown-menu > .dropdown-item > .playlist-input-container > .create-btn:hover {
+    background: var(--bg-color-quaternary);
+}
+
+/* Responsive */
+@media only screen and (max-width: 480px), (pointer: coarse) {
+    .dropdown {
+        position: fixed;
+        top: unset !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        width: 100%;
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1) translateY(100%);
+        transition:
+            height 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+            transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dropdown.active {
+        transform: scale(1) translateY(0);
+    }
+
+    .dropdown > .dropdown-menu {
+        min-width: 100%;
+        max-width: 100%;
+        border-radius: 24px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        padding: 0;
+        padding-bottom: 8px;
+        gap: 2px;
+        border: none;
+        box-shadow: none;
+        background-color: var(--bg-color-secondary);
+        max-height: 70dvh;
+        height: 100%;
+        overflow: auto;
+        overflow-x: hidden;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .dropdown > .dropdown-menu.touchBlocked {
+        user-select: none;
+        pointer-events: none;
+    }
+
+    html.iOS .dropdown > .dropdown-menu {
+        padding-left: env(safe-area-inset-left) !important;
+        padding-right: env(safe-area-inset-right) !important;
+    }
+
+    .dropdown > .dropdown-menu {
+        padding-bottom: min(32px, env(safe-area-inset-bottom, 16px));
+    }
+
+    html.safeAreaFallback .dropdown > .dropdown-menu {
+        padding-bottom: 8px;
+    }
+
+    html.safeAreaFallbackAndroid .dropdown > .dropdown-menu {
+        padding-bottom: 8px;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        padding: 16px;
+        margin-bottom: 6px;
+        border-bottom: 1px solid var(--border-color);
+        background-color: var(--bg-color-secondary);
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container {
+        display: flex;
+        align-items: center;
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container > .thumbnail {
+        position: relative;
+        overflow: hidden;
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+        margin-right: 10px;
+        flex-shrink: 0;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container.artist > .thumbnail {
+        border-radius: 20px !important;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container > .thumbnail > img {
+        width: 36px;
+        height: 36px;
+        border-radius: inherit;
+        object-fit: cover;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container > .thumbnail > .fallback-thumbnail {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: inherit;
+        background-color: var(--bg-color-tertiary);
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container.artist > .thumbnail > .fallback-thumbnail {
+        width: 36px;
+        height: 36px;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container.genre > .thumbnail > .fallback-thumbnail {
+        width: 36px;
+        height: 36px;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container > .thumbnail > .fallback-thumbnail > svg {
+        fill: var(--font-color-tertiary);
+        opacity: 0.6;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container > .thumbnail > .art {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        background-color: var(--bg-color-tertiary);
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container > .thumbnail > .art > svg {
+        color: var(--brand-color);
+        opacity: 0.8;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container > .info {
+        overflow: hidden;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container > .info > .title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        /* Help with CJK letter spacing */
+        line-height: 1rem;
+        display: flex;
+        align-items: center;
+        margin-bottom: 2px;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container.artist > .info > .title {
+        margin-bottom: 0;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container.genre > .info > .title {
+        margin-bottom: 0;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container > .info > .title > .text {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container > .info > .title > .favorited {
+        margin-left: 4px;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .container > .info > .desc {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--font-color-tertiary);
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .actions {
+        display: flex;
+        align-items: center;
+        margin-left: 20px;
+        flex-shrink: 0;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .actions > .icon {
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 20px;
+        background-color: var(--bg-color-tertiary);
+        transition: background-color 0.2s ease-out;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .actions:has(.back) > .close {
+        margin-left: 8px;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-header > .actions > .icon:hover,
+    .dropdown > .dropdown-menu > .dropdown-header > .actions > .icon:active {
+        background-color: var(--bg-color-quaternary);
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-separator,
+    .sub-dropdown > .dropdown-menu > .dropdown-separator {
+        display: none;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-item {
+        font-size: 0.825rem;
+        /* Help with CJK letter spacing - account for padding */
+        line-height: 1rem;
+        margin: 0 8px;
+        padding: 10px 12px;
+        border-radius: 8px;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-item:hover {
+        background-color: unset;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-item:active {
+        background-color: var(--bg-color-tertiary);
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-item.return-item {
+        justify-content: unset;
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-item.return-item::after {
+        content: '';
+        position: absolute;
+        left: 10px;
+        bottom: -7px;
+        height: 1px;
+        width: calc(100% - 20px);
+        background-color: var(--border-color);
+        pointer-events: none;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-item.return-item > .return-icon {
+        margin-left: -2px;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-item:has(.playlist-input.has-text) ~ .dropdown-item {
+        opacity: 0.3;
+        pointer-events: none;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-item:has(.playlist-input-container) {
+        padding: unset;
+        background-color: unset !important;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-item:has(.playlist-input-container) > .inline-loader {
+        position: absolute;
+        right: 12px;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-item > .playlist-input-container {
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-item > .playlist-input-container > .playlist-input {
+        font: inherit;
+        position: relative;
+        flex: 1;
+        padding: 10px 16px;
+        padding-left: 12px;
+        background: transparent;
+        text-overflow: ellipsis;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-item > .playlist-input-container > .playlist-input::placeholder {
+        font: inherit;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-item > .playlist-input-container > .playlist-input.has-text {
+        max-width: calc(100% - 60px);
+    }
+
+    .dropdown
+        > .dropdown-menu
+        > .dropdown-item
+        > .playlist-input-container.rename-item-responsive
+        > .playlist-input.has-text {
+        max-width: calc(100% - 68px);
+    }
+
+    .dropdown
+        > .dropdown-menu
+        > .dropdown-item:has(.inline-loader)
+        > .playlist-input-container
+        > .playlist-input.has-text {
+        max-width: calc(100% - 24px);
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-item > .playlist-input-container > .playlist-input.has-text ~ .create-btn {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-item > .playlist-input-container > .create-btn {
+        position: absolute;
+        right: 8px;
+        opacity: 0;
+        visibility: hidden;
+        font-size: 0.725rem;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 6px 10px;
+        border: none;
+        border-radius: 6px;
+        background: var(--bg-color-tertiary);
+        color: var(--font-color);
+        transition:
+            background-color 0.2s ease-out,
+            opacity 0.2s ease-out,
+            visibility 0.2s ease-out;
+    }
+
+    .dropdown > .dropdown-menu > .dropdown-item > .playlist-input-container > .create-btn:hover {
+        background: var(--bg-color-quaternary);
+    }
+}

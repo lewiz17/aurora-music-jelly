@@ -1,0 +1,78 @@
+.queue-page {
+    margin-top: -4px;
+}
+
+.queue-page > .queue-header {
+    margin-bottom: 26px;
+}
+
+.queue-page > .queue-header > .queue-desc {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--font-color-tertiary);
+    margin-top: 8px;
+}
+
+.queue-page > .queue-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+/* dnd-kit related */
+.queue-page > .media-list {
+    margin: 0 -8px;
+}
+
+.queue-page > .media-list .media-item {
+    margin: unset;
+}
+
+.queue-page > .media-list .drag-overlay > .media-item {
+    background-color: var(--bg-color-secondary);
+}
+
+/* dnd handle */
+.queue-page > .media-list .drag-overlay > .media-item > .media-indicators > .draggable > .grid > .dot {
+    background-color: var(--font-color-secondary);
+}
+
+/* Top-left */
+.queue-page > .media-list .drag-overlay > .media-item > .media-indicators > .draggable > .grid > .dot:nth-child(1) {
+    transform: translate(-1px, -1px) translateZ(0);
+}
+
+/* Top-center */
+.queue-page > .media-list .drag-overlay > .media-item > .media-indicators > .draggable > .grid > .dot:nth-child(2) {
+    transform: translate(0, -1px) translateZ(0);
+}
+
+/* Top-right */
+.queue-page > .media-list .drag-overlay > .media-item > .media-indicators > .draggable > .grid > .dot:nth-child(3) {
+    transform: translate(1px, -1px) translateZ(0);
+}
+
+/* Middle-left */
+.queue-page > .media-list .drag-overlay > .media-item > .media-indicators > .draggable > .grid > .dot:nth-child(4) {
+    transform: translate(-1px, 0) translateZ(0);
+}
+
+/* Middle-right */
+.queue-page > .media-list .drag-overlay > .media-item > .media-indicators > .draggable > .grid > .dot:nth-child(6) {
+    transform: translate(1px, 0) translateZ(0);
+}
+
+/* Bottom-left */
+.queue-page > .media-list .drag-overlay > .media-item > .media-indicators > .draggable > .grid > .dot:nth-child(7) {
+    transform: translate(-1px, 1px) translateZ(0);
+}
+
+/* Bottom-center */
+.queue-page > .media-list .drag-overlay > .media-item > .media-indicators > .draggable > .grid > .dot:nth-child(8) {
+    transform: translate(0, 1px) translateZ(0);
+}
+
+/* Bottom-right */
+.queue-page > .media-list .drag-overlay > .media-item > .media-indicators > .draggable > .grid > .dot:nth-child(9) {
+    transform: translate(1px, 1px) translateZ(0);
+}

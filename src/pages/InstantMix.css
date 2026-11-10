@@ -1,0 +1,157 @@
+.instant-mix-page > .instant-mix-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.instant-mix-page > .instant-mix-header > .thumbnail {
+    display: block;
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    margin-right: 20px;
+    background-color: var(--bg-color-secondary);
+}
+
+.instant-mix-page > .instant-mix-header > .thumbnail > .thumbnail {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.instant-mix-page > .instant-mix-header > .thumbnail > .fallback-thumbnail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background-color: var(--bg-color-tertiary);
+}
+
+.instant-mix-page > .instant-mix-header > .thumbnail > .fallback-thumbnail > svg {
+    fill: var(--font-color-tertiary);
+    opacity: 0.6;
+    margin-left: -4%;
+}
+
+.instant-mix-page > .instant-mix-header > .instant-mix-details {
+    flex: 1;
+}
+
+.instant-mix-page > .instant-mix-header > .instant-mix-details > .title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    /* Help with CJK letter spacing */
+    line-height: 1.0625rem;
+    margin-bottom: 4px;
+}
+
+.instant-mix-page > .instant-mix-header > .instant-mix-details > .subtitle {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--font-color-tertiary);
+    margin-bottom: 4px;
+}
+
+.instant-mix-page > .instant-mix-header > .instant-mix-details > .subtitle > .highlight {
+    font-weight: 600;
+}
+
+.instant-mix-page > .instant-mix-header > .instant-mix-details > .stats {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--font-color-tertiary);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.instant-mix-page > .instant-mix-header > .instant-mix-details > .stats > .track-amount > .number {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.instant-mix-page > .instant-mix-header > .instant-mix-details > .stats > .divider {
+    width: 2px;
+    height: 2px;
+    margin: 0 4px;
+    margin-top: 2px;
+    border-radius: 50%;
+    background-color: var(--font-color-tertiary);
+}
+
+.instant-mix-page > .instant-mix-header > .instant-mix-details > .stats > .length > .number {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.instant-mix-page > .instant-mix-header > .instant-mix-details > .actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.instant-mix-page > .instant-mix-header > .instant-mix-details > .actions > .primary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.instant-mix-page > .instant-mix-header > .instant-mix-details > .actions > .primary > .play-instant-mix {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 6px 11px;
+    border-radius: 6px;
+    background-color: var(--bg-color-secondary);
+    transition: background-color 0.2s ease-out;
+}
+
+.instant-mix-page > .instant-mix-header > .instant-mix-details > .actions > .primary > .play-instant-mix:hover {
+    background-color: var(--bg-color-tertiary);
+}
+
+.instant-mix-page > .instant-mix-header > .instant-mix-details > .actions > .primary > .play-instant-mix > .play-icon {
+    display: block;
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    background-color: var(--brand-color);
+    mask-repeat: no-repeat;
+    mask-image: url(/play.fill.svg);
+}
+
+.instant-mix-page > .instant-mix-header > .instant-mix-details > .actions > .primary > .play-instant-mix > .text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--brand-color);
+}
+
+/* Responsive */
+@media only screen and (max-width: 320px) {
+    .instant-mix-page > .instant-mix-header {
+        flex-direction: column;
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .instant-mix-page > .instant-mix-header > .thumbnail {
+        margin-right: 0;
+    }
+
+    .instant-mix-page > .instant-mix-header > .instant-mix-details {
+        text-align: center;
+    }
+
+    .instant-mix-page > .instant-mix-header > .instant-mix-details > .stats {
+        justify-content: center;
+    }
+
+    .instant-mix-page > .instant-mix-header > .instant-mix-details > .actions {
+        justify-content: center;
+    }
+}

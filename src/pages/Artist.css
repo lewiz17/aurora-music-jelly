@@ -1,0 +1,303 @@
+.artist-page {
+    margin-top: 4px;
+}
+
+.artist-page > .artist-header {
+    display: flex;
+    align-items: center;
+    margin-left: 28px;
+    margin-bottom: 14px;
+}
+
+.artist-page:not(:has(> .artist-content > .section.top-songs)) > .artist-header {
+    margin-left: 0;
+    margin-bottom: 40px;
+}
+
+.artist-page > .artist-header > .thumbnail {
+    display: block;
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    margin-right: 20px;
+    background-color: var(--bg-color-secondary);
+}
+
+.artist-page > .artist-header > .thumbnail > .thumbnail {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.artist-page > .artist-header > .thumbnail > .fallback-thumbnail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background-color: var(--bg-color-tertiary);
+}
+
+.artist-page > .artist-header > .thumbnail > .fallback-thumbnail > svg {
+    fill: var(--font-color-tertiary);
+    opacity: 0.6;
+    margin-left: -4%;
+}
+
+.artist-page > .artist-header > .artist-details {
+    flex: 1;
+}
+
+.artist-page > .artist-header > .artist-details > .artist {
+    font-size: 0.9rem;
+    font-weight: 600;
+    /* Help with CJK letter spacing */
+    line-height: 1.0625rem;
+    margin-bottom: 4px;
+}
+
+.artist-page > .artist-header > .artist-details > .genres {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--font-color-tertiary);
+    margin-bottom: 4px;
+}
+
+.artist-page > .artist-header > .artist-details > .stats {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--font-color-tertiary);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.artist-page > .artist-header > .artist-details > .stats > .track-amount > .number,
+.artist-page > .artist-header > .artist-details > .stats > .album-amount > .number {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.artist-page > .artist-header > .artist-details > .stats > .divider {
+    width: 2px;
+    height: 2px;
+    margin: 0 4px;
+    margin-top: 2px;
+    border-radius: 50%;
+    background-color: var(--font-color-tertiary);
+}
+
+.artist-page > .artist-header > .artist-details > .stats > .length > .number {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.artist-page > .artist-header > .artist-details > .stats > .plays > .number {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.artist-page > .artist-header > .artist-details > .actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.artist-page > .artist-header > .artist-details > .actions > .primary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.artist-page > .artist-header > .artist-details > .actions > .primary > .play-artist {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 6px 11px;
+    border-radius: 6px;
+    background-color: var(--bg-color-secondary);
+    transition: background-color 0.2s ease-out;
+}
+
+.artist-page > .artist-header > .artist-details > .actions > .primary > .play-artist:hover {
+    background-color: var(--bg-color-tertiary);
+}
+
+.artist-page > .artist-header > .artist-details > .actions > .primary > .play-artist > .play-icon {
+    display: block;
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    background-color: var(--brand-color);
+    mask-repeat: no-repeat;
+    mask-image: url(/play.fill.svg);
+}
+
+.artist-page > .artist-header > .artist-details > .actions > .primary > .play-artist > .text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--brand-color);
+}
+
+.artist-page > .artist-header > .artist-details > .actions > .primary > .favorite-state {
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 20px;
+    transition: background-color 0.2s ease-out;
+}
+
+.artist-page > .artist-header > .artist-details > .actions > .primary > .favorite-state:hover {
+    background-color: var(--bg-color-tertiary);
+}
+
+.artist-page > .artist-header > .artist-details > .actions > .primary > .favorite-state > svg {
+    color: var(--brand-color);
+}
+
+.artist-page > .artist-header > .artist-details > .actions > .secondary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.artist-page > .artist-header > .artist-details > .actions > .secondary > .download-state {
+    fill: var(--font-color-tertiary);
+}
+
+.artist-page
+    > .artist-header
+    > .artist-details
+    > .actions
+    > .secondary
+    > .download-state
+    > .icon.downloading.active-sync
+    > svg
+    path:last-child {
+    clip-path: inset(100% 0 0 0);
+    animation: syncColorSweepArtist 1.6s linear infinite;
+}
+
+@keyframes syncColorSweepArtist {
+    0% {
+        clip-path: inset(0 0 100% 0);
+    }
+    50% {
+        clip-path: inset(0% 0 0 0);
+    }
+    100% {
+        clip-path: inset(100% 0 0 0);
+    }
+}
+
+.artist-page > .artist-header > .artist-details > .actions > .secondary > .more {
+    cursor: pointer;
+    padding: 7px;
+    border-radius: 20px;
+    background-color: var(--bg-color-secondary);
+    transition: background-color 0.2s ease-out;
+}
+
+.artist-page > .artist-header > .artist-details > .actions > .secondary > .more:hover {
+    background-color: var(--bg-color-tertiary);
+}
+
+.artist-page > .artist-header > .artist-details > .actions > .secondary > .more.active {
+    background-color: var(--bg-color-tertiary);
+}
+
+.artist-page > .artist-header > .artist-details > .actions > .secondary > .more > svg {
+    fill: var(--brand-color);
+}
+
+.artist-page > .artist-content > .section {
+    margin-bottom: 40px;
+}
+
+.artist-page > .artist-content > .section:last-of-type {
+    margin-bottom: 0;
+}
+
+.artist-page > .artist-content > .section > .title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.artist-page > .artist-content > .section > .desc {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--font-color-tertiary);
+    margin-bottom: 6px;
+}
+
+.artist-page > .artist-content > .section.skeleton-bottom {
+    margin-bottom: 0;
+}
+
+.artist-page > .artist-content > .section.skeleton-bottom > .skeleton-title {
+    height: 18px;
+    width: 62px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+}
+
+.artist-page > .artist-content > .section.skeleton-bottom > .skeleton-desc {
+    height: 14px;
+    width: 132px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+}
+
+.artist-page > .artist-content > .section.skeleton-bottom > .media-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    margin: 0 -8px;
+    border-radius: 8px;
+}
+
+.artist-page > .artist-content > .section.top-songs > .all-tracks {
+    font-size: 0.725rem;
+    font-weight: 500;
+    text-align: right;
+    margin-top: 10px;
+}
+
+.artist-page > .artist-content > .section.top-songs > .all-tracks > a.textlink {
+    color: var(--font-color-tertiary);
+}
+
+/* Responsive */
+@media only screen and (max-width: 500px) {
+    .artist-page > .artist-header {
+        margin-left: 0;
+    }
+}
+
+@media only screen and (max-width: 360px) {
+    .artist-page > .artist-header {
+        flex-direction: column;
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .artist-page > .artist-header > .thumbnail {
+        margin-right: 0;
+    }
+
+    .artist-page > .artist-header > .artist-details {
+        text-align: center;
+    }
+
+    .artist-page > .artist-header > .artist-details > .stats {
+        justify-content: center;
+    }
+
+    .artist-page > .artist-header > .artist-details > .actions {
+        justify-content: center;
+    }
+}

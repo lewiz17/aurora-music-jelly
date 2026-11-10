@@ -1,0 +1,19 @@
+services:
+    aurora:
+        build: .
+        container_name: aurora
+        restart: unless-stopped
+        ports:
+            - '${AURORA_PORT:-8787}:8787'
+        environment:
+            # --- obligatorio ---
+            ADMIN_USER: ${ADMIN_USER:-admin}
+            ADMIN_PASSWORD: ${ADMIN_PASSWORD:?define ADMIN_PASSWORD en el archivo .env}
+            # firma las sesiones del gateway: usa una cadena aleatoria larga
+            SESSION_SECRET: ${SESSION_SECRET:?define SESSION_SECRET en el archivo .env}
+        volumes:
+            # aquí viven los códigos, los logos y las listas importadas
+            - aurora-data:/data
+
+volumes:
+    aurora-data:

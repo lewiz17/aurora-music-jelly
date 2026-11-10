@@ -1,0 +1,310 @@
+.lyrics-page {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.lyrics-page > .lyrics-line {
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 0 -8px;
+    padding: 8px 38px;
+}
+
+.lyrics-page:not(.lyrics-page.synced) > .lyrics-line:has(.text.centered) {
+    padding: 8px 12px;
+}
+
+.lyrics-page.synced > .lyrics-line {
+    font-size: 1.125rem;
+    font-weight: 800;
+    /* Help with CJK letter spacing */
+    line-height: 1.3125rem;
+    color: var(--font-color-tertiary);
+    cursor: pointer;
+    border-radius: 8px;
+    transition:
+        color 0.6s ease-out,
+        background-color 0.2s ease-out;
+}
+
+.lyrics-page.synced > .lyrics-line.active {
+    color: var(--brand-color);
+}
+
+.lyrics-page.synced:has(.lyric-word) > .lyrics-line.active {
+    color: var(--font-color-secondary);
+}
+
+.lyrics-page.synced > .lyrics-line:hover {
+    background-color: var(--bg-color-secondary);
+}
+
+.lyrics-page.synced:has(.lyrics-line > .numbers) > .lyrics-line {
+    padding: 8px 12px;
+    margin: 0 -12px;
+}
+
+/* Empty line without timestamps */
+.lyrics-page > .lyrics-line:has(.text:empty)::before {
+    content: '...';
+    margin-top: -5px;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lyrics-page.synced > .lyrics-line:has(.text:empty)::before {
+    height: 100%;
+}
+
+/* Empty line with centered text */
+.lyrics-page > .lyrics-line:has(.text.centered:empty)::before {
+    width: 100%;
+}
+
+/* Empty line with timestamps */
+.lyrics-page > .lyrics-line:has(.numbers ~ .text:empty)::before {
+    display: none !important;
+}
+
+.lyrics-page > .lyrics-line:has(.numbers ~ .text:empty)::after {
+    content: '...';
+    margin-top: -5px;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lyrics-page.synced > .lyrics-line:has(.numbers ~ .text:empty)::after {
+    height: 100%;
+}
+
+/* Empty line with timestamps and centered text */
+.lyrics-page > .lyrics-line:has(.numbers ~ .text.centered:empty)::after {
+    width: 100%;
+}
+
+.lyrics-page > .lyrics-line:has(.numbers ~ .text:empty) > .text {
+    display: none;
+}
+
+/* Empty line with unsynced lyrics and centered text */
+.lyrics-page:not(.lyrics-page.synced) > .lyrics-line:has(.text.centered:empty) {
+    gap: 0;
+}
+
+/* Empty line with synced lyrics and centered text but only without numbers */
+.lyrics-page.synced > .lyrics-line:has(.text.centered:empty):not(:has(.numbers)) {
+    gap: 0;
+}
+
+/* Empty line animation for synced and active lyrics without timestamps */
+.lyrics-page.synced > .lyrics-line:has(.text:empty)::before {
+    opacity: 0.5;
+    transform-origin: left;
+    transform: scale(0.96);
+    transition:
+        transform 0.2s ease-out,
+        opacity 0.6s ease-out;
+}
+
+.lyrics-page.synced > .lyrics-line:has(.text.centered:empty)::before {
+    transform-origin: center;
+}
+
+.lyrics-page.synced > .lyrics-line.active:has(.text:empty)::before {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Empty line animation for synced and active lyrics with timestamps */
+.lyrics-page.synced > .lyrics-line:has(.numbers ~ .text:empty)::after {
+    opacity: 0.5;
+    transform-origin: left;
+    transform: scale(0.96);
+    transition:
+        transform 0.2s ease-out,
+        opacity 0.6s ease-out;
+}
+
+.lyrics-page.synced > .lyrics-line:has(.numbers ~ .text.centered:empty)::after {
+    transform-origin: center;
+}
+
+.lyrics-page.synced > .lyrics-line.active:has(.numbers ~ .text:empty)::after {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.lyrics-page > .lyrics-line > .numbers {
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    margin-top: 1px;
+}
+
+.lyrics-page.synced > .lyrics-line > .numbers {
+    opacity: 0.5;
+    transition:
+        color 0.2s ease-out,
+        opacity 0.6s ease-out;
+}
+
+.lyrics-page.synced > .lyrics-line.active > .numbers {
+    opacity: 1;
+}
+
+.lyrics-page.synced:has(.lyric-word) > .lyrics-line.active > .numbers {
+    color: var(--brand-color);
+}
+
+/* Align numbers and empty line when text is empty */
+.lyrics-page > .lyrics-line:has(.numbers ~ .text:empty) > .numbers {
+    min-height: 20px;
+}
+
+.lyrics-page > .lyrics-line > .text {
+    flex: 1;
+    min-height: 21px;
+}
+
+.lyrics-page > .lyrics-line > .text.centered {
+    text-align: center;
+}
+
+.lyrics-page.synced > .lyrics-line > .text {
+    opacity: 0.5;
+    transform-origin: left;
+    transform: scale(0.96);
+    transition:
+        transform 0.2s ease-out,
+        opacity 0.6s ease-out;
+}
+
+.lyrics-page.synced > .lyrics-line > .text.centered {
+    transform-origin: center;
+}
+
+.lyrics-page.synced > .lyrics-line.active > .text {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Word by word lyric related */
+.lyrics-page.synced > .lyrics-line > .text:has(> .lyric-word) {
+    opacity: 1;
+}
+
+.lyrics-page.synced > .lyrics-line.active > .text:has(> .lyric-word.active) {
+    opacity: 1;
+}
+
+/* Base karaoke word */
+.lyrics-page.synced > .lyrics-line > .text > .lyric-word {
+    display: inline;
+    position: relative;
+
+    --p: 0;
+    --base-alpha: 0.5;
+    --fill-alpha: 1;
+
+    background-image:
+        linear-gradient(
+            color-mix(in srgb, var(--brand-color) calc(var(--fill-alpha) * 100%), transparent),
+            color-mix(in srgb, var(--brand-color) calc(var(--fill-alpha) * 100%), transparent)
+        ),
+        linear-gradient(
+            color-mix(in srgb, var(--font-color-tertiary) calc(var(--base-alpha) * 100%), transparent),
+            color-mix(in srgb, var(--font-color-tertiary) calc(var(--base-alpha) * 100%), transparent)
+        );
+
+    background-repeat: no-repeat;
+    background-position:
+        left top,
+        left top;
+    background-size:
+        calc(var(--p) * 100%) 100%,
+        100% 100%;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Active line words */
+.lyrics-page.synced > .lyrics-line.active > .text > .lyric-word {
+    --base-alpha: 0.7;
+}
+
+/* Past words in active line */
+.lyrics-page.synced > .lyrics-line.active > .text > .lyric-word.active {
+    --p: 1;
+    --base-alpha: 1;
+    --fill-alpha: 1;
+}
+
+/* Current word uses animated --p (set by rAF) */
+.lyrics-page.synced > .lyrics-line.active > .text > .lyric-word.current {
+    --base-alpha: 0.7;
+}
+
+/* Add extra space for spaced words */
+.lyrics-page.synced > .lyrics-line > .text > .lyric-word.space {
+    margin-right: 0.25rem;
+}
+
+/* Past words in non-active lines */
+.lyrics-page.synced > .lyrics-line:not(.active) > .text > .lyric-word.active {
+    --p: 1;
+    --base-alpha: 0.7;
+    --fill-alpha: 0.35;
+}
+
+/* Responsive */
+@media only screen and (pointer: coarse) {
+    .lyrics-page.synced > .lyrics-line:hover {
+        background-color: unset;
+    }
+
+    .lyrics-page.synced > .lyrics-line:active {
+        background-color: var(--bg-color-secondary);
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    .lyrics-page > .lyrics-line {
+        padding: 8px 12px;
+        margin: 0 -12px;
+    }
+}
+
+@media only screen and (max-width: 320px) {
+    .lyrics-page.synced:has(.lyrics-line > .numbers) {
+        gap: 8px;
+    }
+
+    .lyrics-page.synced:has(.lyrics-line > .numbers) > .lyrics-line {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .lyrics-page.synced:has(.lyrics-line > .text.centered):has(.lyrics-line > .numbers) > .lyrics-line {
+        align-items: center;
+    }
+
+    .lyrics-page > .lyrics-line > .numbers {
+        margin-top: 0;
+    }
+
+    .lyrics-page > .lyrics-line:has(.numbers ~ .text:empty) > .numbers {
+        margin-bottom: -4px;
+    }
+}
