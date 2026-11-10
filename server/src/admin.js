@@ -158,7 +158,10 @@ export const createAdminRouter = () => {
 
     // ---------- servers ----------
     router.post('/api/servers', express.json(), (req, res) => {
-        const { jellyfinUrl, label, code } = req.body || {}
+        const body = req.body && typeof req.body === 'object' ? req.body : {}
+        // El panel manda `jellyfinUrl`; la API pública también acepta `url`.
+        const jellyfinUrl = body.jellyfinUrl || body.url
+        const { label, code } = body
         if (!jellyfinUrl || !/^https?:\/\//i.test(jellyfinUrl)) {
             return res.status(400).json({ error: 'invalid_url', message: 'La URL debe empezar por http:// o https://' })
         }
