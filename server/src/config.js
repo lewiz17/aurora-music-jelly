@@ -24,6 +24,8 @@ export const config = {
     host: process.env.HOST || '0.0.0.0',
     // Where the JSON database and uploaded assets live.
     dataDir: path.resolve(process.env.DATA_DIR || path.join(root, 'data')),
+    // Optional Postgres persistence (see persist.js). Empty = JSON file only, as always.
+    databaseUrl: process.env.DATABASE_URL || '',
     // Built web app (yarn build output)
     webDir: path.resolve(process.env.WEB_DIR || path.join(root, '..', 'dist')),
     // Admin panel static files

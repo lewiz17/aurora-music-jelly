@@ -242,6 +242,13 @@ export const createAdminRouter = () => {
         const finalName = `${slot}-${Date.now()}${ext}`
         fs.renameSync(req.file.path, path.join(paths.assets, finalName))
         Store.setAsset(slot, finalName)
+        // Si hay Postgres, los bytes quedan también allí (segundo plano, ver
+        // store.js). La copia en disco de arriba sigue siendo el fallback y un
+        // fallo leyendo/sincronizando nunca invalida la subida.
+        try {
+            const buffer = fs.readFileSync(path.join(paths.assets, finalName))
+            Store.saveAssetBytes(slot, buffer, { filename: finalName, mime: req.file.mimetype })
+        } catch {}
         res.json({ slot, url: `/branding/${slot}` })
     })
 

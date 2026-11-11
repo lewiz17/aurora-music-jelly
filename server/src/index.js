@@ -27,6 +27,13 @@ app.use((_req, res, next) => {
     next()
 })
 
+// ---------- persistencia opcional (Postgres con fallback a aurora.json) ----------
+// Sin DATABASE_URL no hace nada. Con ella, si Postgres tiene estado, manda él
+// (y aurora.json queda actualizado como respaldo). Nunca bloquea el arranque:
+// persist.js captura todos sus errores. Va antes del bootstrap porque éste
+// lee/escribe el Store (admin, servidores...).
+await Store.hydrate()
+
 // ---------- bootstrap admin ----------
 const bootstrap = async () => {
     const password = config.adminPassword
@@ -89,19 +96,32 @@ app.get('/api/app-config', (_req, res) => {
 app.use(createProxyRouter())
 
 // ---------- branding assets ----------
-app.get('/branding/:slot', (req, res) => {
+app.get('/branding/:slot', async (req, res) => {
     const filename = Store.assets[req.params.slot]
     if (!filename) return res.status(404).end()
     const file = path.join(paths.assets, filename)
-    if (!fs.existsSync(file)) return res.status(404).end()
     res.setHeader('Cache-Control', 'public, max-age=60')
-    res.sendFile(file)
+    if (fs.existsSync(file)) return res.sendFile(file)
+    // Sin copia local (disco efímero tras un reinicio/redeploy): si hay
+    // Postgres, sirve los bytes guardados allí.
+    const asset = await Store.loadAssetBytes(req.params.slot)
+    if (!asset) return res.status(404).end()
+    if (asset.mime) res.type(asset.mime)
+    return res.send(asset.buffer)
 })
 
 // Dynamic app icon (favicon / PWA manifest) using the uploaded branding
-const sendIcon = (_req, res) => {
+const sendIcon = async (_req, res) => {
     const filename = Store.assets.icon
-    if (filename) return res.sendFile(path.join(paths.assets, filename))
+    if (filename) {
+        const file = path.join(paths.assets, filename)
+        if (fs.existsSync(file)) return res.sendFile(file)
+        const asset = await Store.loadAssetBytes('icon')
+        if (asset) {
+            if (asset.mime) res.type(asset.mime)
+            return res.send(asset.buffer)
+        }
+    }
     return res.sendFile(path.join(config.webDir, 'favicon-96x96.png'))
 }
 app.get('/favicon.ico', sendIcon)

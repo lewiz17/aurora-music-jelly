@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import crypto from 'node:crypto'
 import { paths } from './config.js'
+import * as persist from './persist.js'
 
 const DEFAULT_DATA = {
     version: 1,
@@ -27,24 +28,66 @@ const DEFAULT_DATA = {
 }
 
 class StoreImpl {
+    // Cola que serializa los guardados en Postgres (último estado gana, sin
+    // pisarse unos a otros) sin bloquear nunca la API síncrona del Store.
+    #persistQueue = Promise.resolve()
+
     constructor() {
         this.data = this.#load()
+    }
+
+    #merge(parsed) {
+        return { ...structuredClone(DEFAULT_DATA), ...parsed, settings: { ...DEFAULT_DATA.settings, ...(parsed.settings || {}) } }
     }
 
     #load() {
         try {
             const raw = fs.readFileSync(paths.data, 'utf8')
-            const parsed = JSON.parse(raw)
-            return { ...structuredClone(DEFAULT_DATA), ...parsed, settings: { ...DEFAULT_DATA.settings, ...(parsed.settings || {}) } }
+            return this.#merge(JSON.parse(raw))
         } catch {
             return structuredClone(DEFAULT_DATA)
         }
     }
 
-    save() {
+    #writeLocal() {
         const tmp = `${paths.data}.tmp`
         fs.writeFileSync(tmp, JSON.stringify(this.data, null, 2))
         fs.renameSync(tmp, paths.data)
+    }
+
+    #queuePersist(op) {
+        if (!persist.persistEnabled) return
+        // persist.* nunca lanza; el catch es sólo una red extra de seguridad.
+        this.#persistQueue = this.#persistQueue.then(op).catch(() => {})
+    }
+
+    /**
+     * Hidratación opcional al arrancar (la llama index.js antes de escuchar):
+     * si hay DATABASE_URL y Postgres guarda un estado, ese estado manda y se
+     * vuelca también a aurora.json para que el fallback local quede al día.
+     * Si Postgres no tiene estado todavía, se siembra con el JSON local.
+     * Si Postgres falla, no pasa nada: se sigue con aurora.json como siempre.
+     */
+    async hydrate() {
+        if (!persist.persistEnabled) return false
+        const remote = await persist.loadState()
+        if (remote && typeof remote === 'object') {
+            this.data = this.#merge(remote)
+            this.#writeLocal()
+            console.log('[aurora] persist: estado cargado desde Postgres')
+            return true
+        }
+        // Primera vez con DATABASE_URL (o Postgres inalcanzable): siembra la
+        // base con el estado local. saveState devuelve false si falló.
+        await persist.saveState(structuredClone(this.data))
+        return false
+    }
+
+    save() {
+        this.#writeLocal()
+        // Segundo plano: el JSON local ya está guardado pase lo que pase.
+        const snapshot = persist.persistEnabled ? structuredClone(this.data) : null
+        if (snapshot) this.#queuePersist(() => persist.saveState(snapshot))
     }
 
     // ---------- settings ----------
@@ -124,6 +167,25 @@ class StoreImpl {
     removeAsset(slot) {
         delete this.data.assets[slot]
         this.save()
+        this.#queuePersist(() => persist.deleteAsset(slot))
+    }
+
+    /**
+     * Guarda los bytes de un asset también en Postgres (segundo plano).
+     * Lo llama admin.js tras subir el archivo; la copia en disco se mantiene
+     * igual que siempre como fallback. Sin DATABASE_URL no hace nada.
+     */
+    saveAssetBytes(slot, buffer, { filename, mime } = {}) {
+        if (!buffer) return
+        const name = filename || this.data.assets[slot]
+        if (!name) return
+        this.#queuePersist(() => persist.saveAsset(slot, name, mime || '', buffer))
+    }
+
+    /** Bytes de un asset desde Postgres ({ filename, mime, buffer } | null). */
+    async loadAssetBytes(slot) {
+        if (!persist.persistEnabled) return null
+        return persist.loadAsset(slot)
     }
 
     // ---------- imports (YT Music playlist staging) ----------
