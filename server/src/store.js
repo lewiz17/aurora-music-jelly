@@ -69,6 +69,13 @@ class StoreImpl {
         return this.data.servers.find(s => normalizeCode(s.code) === normalized && s.active !== false) || null
     }
 
+    /** Like findByCode, but also counts deactivated servers (a code must stay unique). */
+    codeInUse(code, exceptId) {
+        const normalized = normalizeCode(code)
+        if (!normalized) return false
+        return this.data.servers.some(s => s.id !== exceptId && normalizeCode(s.code) === normalized)
+    }
+
     findById(id) {
         return this.data.servers.find(s => s.id === id) || null
     }
@@ -126,7 +133,9 @@ class StoreImpl {
     }
 
     getImport(id) {
-        return this.data.imports[id]
+        const record = this.data.imports[id]
+        // The key is the source of truth for the id (the panel builds URLs from record.id)
+        return record ? { ...record, id } : record
     }
 
     listImports() {

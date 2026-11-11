@@ -537,7 +537,9 @@
 
             // ---------------- login ----------------
             const renderLogin = () => {
-                const username = h('input', { placeholder: 'Usuario', value: 'admin', autocomplete: 'username' })
+                // Not prefilled: typing "admin" into a field that already says "admin" produced
+                // "adminadmin" and the login failed with "Usuario o contraseña incorrectos".
+                const username = h('input', { placeholder: 'Usuario', autocomplete: 'username', autocapitalize: 'none', spellcheck: 'false' })
                 const password = h('input', { type: 'password', placeholder: 'Contraseña', autocomplete: 'current-password' })
                 const error = h('div', { class: 'empty' })
 
@@ -547,7 +549,7 @@
                     state.busy = true
                     error.textContent = ''
                     try {
-                        await login(username.value, password.value)
+                        await login(username.value.trim(), password.value)
                         await boot()
                     } catch (err) {
                         error.textContent = err.message
@@ -581,7 +583,7 @@
                         )
                     )
                 )
-                password.focus()
+                username.focus()
             }
 
             // ---------------- tabs ----------------
@@ -1003,11 +1005,31 @@
                 let detailNode = null
 
                 if (detail) {
+                    // Same rule as the server (selectPlaylistIds): "no encontrada" rows are left out
+                    // and a library item that appears twice is added once.
+                    const summarize = () => {
+                        const count = status => detail.tracks.filter(track => track.status === status).length
+                        const ids = new Set(
+                            detail.tracks.filter(track => track.chosenId && track.status !== 'none').map(track => track.chosenId)
+                        )
+                        return { auto: count('auto'), review: count('review'), none: count('none'), toAdd: ids.size }
+                    }
+
+                    const summaryText = h('p', { class: 'hint' })
+                    const applyButton = h('button', { class: 'primary' })
+                    const updateSummary = () => {
+                        const s = summarize()
+                        summaryText.textContent = `${detail.tracks.length} pistas · ${s.auto} emparejadas · ${s.review} por revisar · ${s.none} sin coincidencia. Las «sin coincidencia» no se añaden hasta que elijas una versión a mano.`
+                        applyButton.textContent = `Crear lista (${s.toAdd} canciones)`
+                    }
+
                     const rows = detail.tracks.map((track, index) => {
+                        // Old imports kept a preselected guess even for "no encontrada": ignore it.
+                        const chosen = track.status === 'none' ? null : track.chosenId
                         const options = (track.candidates || []).map(candidate =>
                             h(
                                 'option',
-                                { value: candidate.itemId, selected: candidate.itemId === track.chosenId },
+                                { value: candidate.itemId, selected: candidate.itemId === chosen },
                                 `${candidate.name} — ${candidate.artist} (${candidate.score})`
                             )
                         )
@@ -1017,13 +1039,20 @@
                             h('option', { value: '' }, '— sin coincidencia —'),
                             options
                         )
+                        const badgeCell = h('td', {}, statusBadge(track.status))
                         select.addEventListener('change', async () => {
-                            await api(`/api/imports/${detail.id}`, {
-                                method: 'PUT',
-                                body: JSON.stringify({ overrides: { [index]: select.value || null } }),
-                            })
+                            try {
+                                await api(`/api/imports/${detail.id}`, {
+                                    method: 'PUT',
+                                    body: JSON.stringify({ overrides: { [index]: select.value || null } }),
+                                })
+                            } catch (err) {
+                                return toast(err.message, true)
+                            }
                             track.chosenId = select.value || null
                             track.status = select.value ? 'auto' : 'none'
+                            badgeCell.replaceChildren(statusBadge(track.status))
+                            updateSummary()
                         })
 
                         return h(
@@ -1032,14 +1061,18 @@
                             h('td', { style: 'color:#6b6685;width:28px' }, index + 1),
                             h('td', {}, h('div', { style: 'font-weight:600' }, track.title), h('div', { class: 'meta' }, track.artist)),
                             h('td', { style: 'min-width:260px' }, select),
-                            h('td', {}, statusBadge(track.status)),
+                            badgeCell,
                             h('td', { class: 'score', style: 'text-align:right' }, track.score?.toFixed(2) ?? '—')
                         )
                     })
 
                     const nameInput = h('input', { value: detail.title, style: 'max-width:320px' })
 
-                    const apply = async () => {
+                    let applying = false
+                    applyButton.addEventListener('click', async () => {
+                        if (applying) return
+                        applying = true
+                        applyButton.disabled = true
                         try {
                             const result = await api(`/api/imports/${detail.id}/apply`, {
                                 method: 'POST',
@@ -1049,28 +1082,30 @@
                                     mode: 'create',
                                 }),
                             })
-                            toast(`Lista creada con ${result.added} canciones`)
+                            const extra = result.duplicates ? ` (${result.duplicates} repetidas omitidas)` : ''
+                            toast(`Lista creada con ${result.added} canciones${extra}`)
+                            // The review is done: close it. The list stays in "Importaciones",
+                            // marked as created, with only the "Abrir" option.
+                            state.importDetail = null
+                            await refresh()
                         } catch (err) {
                             toast(err.message, true)
+                            applying = false
+                            applyButton.disabled = false
                         }
-                    }
-
-                    const matched = detail.tracks.filter(track => track.chosenId).length
+                    })
+                    updateSummary()
 
                     detailNode = h(
                         'div',
                         { class: 'card' },
                         h('h2', {}, detail.title),
-                        h(
-                            'p',
-                            { class: 'hint' },
-                            `${detail.tracks.length} pistas · ${matched} emparejadas · ${detail.tracks.length - matched} sin coincidencia. Revisa las dudosas antes de crear la lista.`
-                        ),
+                        summaryText,
                         h(
                             'div',
                             { class: 'row', style: 'margin-bottom:14px' },
                             h('div', { class: 'field' }, h('label', {}, 'Nombre de la lista en Jellyfin'), nameInput),
-                            h('button', { class: 'primary', onclick: apply }, `Crear lista (${matched} canciones)`)
+                            applyButton
                         ),
                         h(
                             'div',
@@ -1089,7 +1124,12 @@
                     h(
                         'div',
                         { class: 'item' },
-                        h('div', { class: 'grow' }, h('div', { class: 'name' }, item.title), h('div', { class: 'meta' }, `${item.total} pistas · ${item.matched} emparejadas · ${new Date(item.createdAt).toLocaleString('es-CO')}`)),
+                        h(
+                            'div',
+                            { class: 'grow' },
+                            h('div', { class: 'name' }, item.title, item.applied ? h('span', { class: 'badge ok', style: 'margin-left:8px' }, 'creada') : null),
+                            h('div', { class: 'meta' }, `${item.total} pistas · ${item.matched} emparejadas${item.review ? ` · ${item.review} por revisar` : ''} · ${new Date(item.createdAt).toLocaleString('es-CO')}`)
+                        ),
                         h('button', {
                             onclick: async () => {
                                 state.importDetail = await api(`/api/imports/${item.id}`)

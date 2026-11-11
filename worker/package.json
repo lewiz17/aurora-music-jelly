@@ -1,0 +1,23 @@
+{
+    "name": "aurora-worker",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "description": "Aurora Music en Cloudflare Workers: gateway, panel de administración e importador (estado en Neon, logos en R2)",
+    "engines": {
+        "node": ">=20"
+    },
+    "scripts": {
+        "prepare-assets": "node scripts/prepare-assets.mjs",
+        "dev": "npm run prepare-assets && npx wrangler dev",
+        "deploy": "npm run prepare-assets && npx wrangler deploy",
+        "check": "npm run prepare-assets && npx wrangler deploy --dry-run --outdir .wrangler/check"
+    },
+    "dependencies": {
+        "@neondatabase/serverless": "^1.2.0",
+        "hono": "^4.13.18"
+    },
+    "devDependencies": {
+        "@electric-sql/pglite": "^0.5.16"
+    }
+}

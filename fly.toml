@@ -1,0 +1,39 @@
+# Aurora en Fly.io (app + panel en un solo contenedor, con volumen para los datos).
+# Guía paso a paso: DEPLOY-FLY.md
+app = "CAMBIA-ESTE-NOMBRE" # tiene que ser único en Fly, p. ej. aurora-tunombre
+primary_region = "iad" # una de las más baratas; elige la más cercana a tus oyentes con `fly platform regions`
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "8787"
+  DATA_DIR = "/data"
+  # el panel y la app sólo pueden incrustarse a sí mismos
+  FRAME_ANCESTORS = "'self'"
+  # ADMIN_PASSWORD y SESSION_SECRET NO van aquí: se guardan con `fly secrets set` (ver la guía)
+
+[http_service]
+  internal_port = 8787
+  force_https = true
+  # Siempre encendida: la app guarda estado y la gente la usa de forma intermitente
+  auto_stop_machines = "off"
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    grace_period = "15s"
+    interval = "30s"
+    method = "GET"
+    timeout = "5s"
+    path = "/api/app-config"
+
+[mounts]
+  source = "aurora_data"
+  destination = "/data"
+  initial_size = "1gb"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

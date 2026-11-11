@@ -1,10 +1,19 @@
 # Local packages and built application
 node_modules
+server/node_modules
 dist
+
+# Local state and secrets: never send them to the build context
+.git
+.github
+.env
+.env.*
+server/data
+*.log
 
 # Documentation
 LICENSE
 README.md
 
-# Docker files
-Dockerfile
+# Compose files (the Dockerfile itself must stay in the context: flyctl requires it)
+docker-compose*.yaml

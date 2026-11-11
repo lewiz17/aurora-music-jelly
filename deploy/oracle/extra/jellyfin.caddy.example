@@ -1,0 +1,9 @@
+# OPCIONAL. Para usar Jellyfin con HTTPS desde apps nativas (Finamp, Symfonium, Jellyfin para
+# Android TV...) detrás del mismo Caddy:
+#   1) crea un segundo nombre DNS que apunte a la misma IP (p. ej. jf-midominio.duckdns.org)
+#   2) copia este archivo a jellyfin.caddy y cambia el dominio
+#   3) docker compose ... restart caddy
+# Ojo: con esto el servidor de música deja de estar "oculto": quien tenga ese dominio llega a Jellyfin.
+jf.tudominio.com {
+	reverse_proxy host.docker.internal:8096
+}

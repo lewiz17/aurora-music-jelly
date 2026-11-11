@@ -1,0 +1,20 @@
+# Caddy pide y renueva el certificado HTTPS solo (Let's Encrypt).
+# Requisitos: el DNS de {$DOMAIN} apunta a la IP pública de la instancia y los puertos 80 y 443
+# están abiertos (lista de seguridad de OCI + firewall de la máquina).
+{$DOMAIN} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		-Server
+	}
+
+	reverse_proxy aurora:8787 {
+		# audio e imágenes: reenvía los trozos según llegan, sin acumularlos
+		flush_interval -1
+	}
+}
+
+# Sitios extra opcionales: copia extra/jellyfin.caddy.example a extra/jellyfin.caddy
+import /etc/caddy/extra/*.caddy

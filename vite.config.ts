@@ -4,9 +4,15 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 const version = process.env.npm_package_version || 'unknown'
 const base = process.env.URL_BASE_PATH || '/'
+// In `npm run dev` the web app is served by Vite, but the gateway, the API and the admin
+// panel live in the Node server. Forward those paths so both work from the same origin.
+const gateway = process.env.AURORA_SERVER || `http://localhost:${process.env.PORT || 8787}`
 
 export default defineConfig({
     base,
+    server: {
+        proxy: Object.fromEntries(['/api', '/jf', '/admin', '/branding'].map(prefix => [prefix, gateway])),
+    },
     plugins: [
         react(),
         VitePWA({

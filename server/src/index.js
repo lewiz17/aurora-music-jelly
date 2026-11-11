@@ -1,5 +1,6 @@
 import express from 'express'
 import cookieParser from 'cookie-parser'
+import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import { config, paths } from './config.js'
@@ -10,7 +11,7 @@ import { THEMES } from './themes.js'
 
 const app = express()
 app.disable('x-powered-by')
-app.set('trust proxy', 1)
+app.set('trust proxy', config.trustProxy)
 app.use(cookieParser())
 
 // Security headers. The app loads images/audio only from itself (everything is proxied).
@@ -29,13 +30,21 @@ app.use((_req, res, next) => {
 // ---------- bootstrap admin ----------
 const bootstrap = async () => {
     const password = config.adminPassword
-    if (!Store.hasAdmin && password) {
-        Store.setAdmin(config.adminUser, password)
-        console.log(`[aurora] admin creado: ${config.adminUser}`)
+    // ADMIN_PASSWORD is the source of truth: if it is set and differs from what is stored
+    // (first run, or the variable was changed later), update the stored admin. Otherwise a
+    // leftover data dir would silently keep an old password and the new one would be ignored.
+    if (password) {
+        if (!Store.hasAdmin) {
+            Store.setAdmin(config.adminUser, password)
+            console.log(`[aurora] admin creado: ${config.adminUser}`)
+        } else if (!Store.verifyAdmin(config.adminUser, password)) {
+            Store.setAdmin(config.adminUser, password)
+            console.log(`[aurora] admin actualizado desde ADMIN_USER/ADMIN_PASSWORD: ${config.adminUser}`)
+        }
     }
     if (!Store.hasAdmin) {
         // First run without env vars: generate credentials and print them once
-        const generated = Math.random().toString(36).slice(2, 10)
+        const generated = crypto.randomBytes(9).toString('base64url')
         Store.setAdmin(config.adminUser, generated)
         console.log('─'.repeat(58))
         console.log('  No ADMIN_PASSWORD found. Generated admin credentials:')
@@ -118,6 +127,9 @@ if (fs.existsSync(path.join(config.webDir, 'index.html'))) {
     )
     app.get('*', (req, res, next) => {
         if (req.path.startsWith('/api') || req.path.startsWith('/jf')) return next()
+        // A missing file (*.js, *.png...) must be a real 404, not index.html with status 200:
+        // otherwise a stale chunk after a deploy fails with a confusing "unexpected token <".
+        if (path.extname(req.path)) return next()
         res.sendFile(path.join(config.webDir, 'index.html'))
     })
 } else {
@@ -128,7 +140,7 @@ if (fs.existsSync(path.join(config.webDir, 'index.html'))) {
             .send(
                 `<body style="font-family:ui-sans-serif,system-ui;padding:40px;max-width:640px;margin:auto;line-height:1.6">
                  <h1>Aurora</h1><p>El servidor está arrancado, pero falta compilar la app web.</p>
-                 <p>Ejecuta <code>cd web &amp;&amp; npm install &amp;&amp; npm run build</code> y vuelve a cargar.</p>
+                 <p>Ejecuta <code>npm install &amp;&amp; npm run build</code> y vuelve a cargar.</p>
                  <p>El panel de administración está en <a href="/admin">/admin</a>.</p></body>`
             )
     )

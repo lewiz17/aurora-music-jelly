@@ -94,6 +94,57 @@ export const scoreCandidate = (ytTrack, candidate) => {
 
 export const classify = score => (score >= 0.72 ? 'auto' : score >= 0.45 ? 'review' : 'none')
 
+/**
+ * Scores the library candidates for one YouTube Music track and decides what to do with it.
+ * "No encontrada" keeps its candidates for a manual pick, but nothing is preselected
+ * (an unconfirmed low-score guess used to be added to the playlist anyway).
+ */
+export const rankCandidates = (track, candidates) => {
+    const scored = (candidates || [])
+        .map(candidate => ({
+            itemId: candidate.Id,
+            name: candidate.Name,
+            artist: (candidate.Artists || []).join(', ') || candidate.AlbumArtist || '',
+            album: candidate.Album || '',
+            score: scoreCandidate(track, candidate),
+        }))
+        .sort((a, b) => b.score - a.score)
+
+    const best = scored[0]
+    const status = best ? classify(best.score) : 'none'
+    return {
+        candidates: scored.slice(0, 5),
+        chosenId: best && status !== 'none' ? best.itemId : null,
+        score: best?.score ?? 0,
+        status,
+    }
+}
+
+/**
+ * Which library items go into the playlist, in YouTube Music order.
+ *  - "no encontrada" rows are never added (an unconfirmed low-score guess is a wrong song);
+ *  - a library item that already appears is skipped, so the playlist has no repeated rows.
+ */
+export const selectPlaylistIds = tracks => {
+    const ids = []
+    const seen = new Set()
+    let duplicates = 0
+    let excluded = 0
+    for (const track of tracks || []) {
+        if (!track?.chosenId || track.status === 'none') {
+            excluded++
+            continue
+        }
+        if (seen.has(track.chosenId)) {
+            duplicates++
+            continue
+        }
+        seen.add(track.chosenId)
+        ids.push(track.chosenId)
+    }
+    return { ids, duplicates, excluded }
+}
+
 /** Runs `worker` over `items` with bounded concurrency. */
 export const mapLimit = async (items, limit, worker) => {
     const results = new Array(items.length)

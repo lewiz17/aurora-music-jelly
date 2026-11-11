@@ -8,8 +8,11 @@ import { Store, generateCode, normalizeCode } from './store.js'
 import { makeAdminToken, verifyAdminSignature } from './session.js'
 import { THEMES } from './themes.js'
 import { fetchPlaylist } from './ytmusic.js'
-import { classify, mapLimit, scoreCandidate } from './match.js'
+import { mapLimit, rankCandidates, selectPlaylistIds } from './match.js'
 import * as jellyfin from './jellyfin-admin.js'
+import { blockedGuard, createLimiter } from './ratelimit.js'
+
+const loginLimiter = createLimiter({ windowMs: config.loginWindowMs, max: config.loginMaxFailures })
 
 const ASSET_SLOTS = ['logo', 'logoDark', 'icon', 'loginBackground', 'albumPlaceholder', 'artistPlaceholder']
 const MAX_ASSET_BYTES = { default: 4 * 1024 * 1024, loginBackground: 12 * 1024 * 1024 }
@@ -70,14 +73,20 @@ export const createAdminRouter = () => {
     const router = express.Router()
 
     // ---------- auth ----------
-    router.post('/api/login', express.json(), (req, res) => {
+    router.post(
+        '/api/login',
+        blockedGuard(loginLimiter, 'Demasiados intentos fallidos. Espera unos minutos e inténtalo de nuevo.'),
+        express.json(),
+        (req, res) => {
         const { username, password } = req.body || {}
         if (!Store.hasAdmin) {
             return res.status(409).json({ error: 'no_admin', message: 'Configura ADMIN_PASSWORD en el entorno.' })
         }
         if (!Store.verifyAdmin(String(username || ''), String(password || ''))) {
+            loginLimiter.fail(req.ip)
             return res.status(401).json({ error: 'invalid_credentials', message: 'Usuario o contraseña incorrectos.' })
         }
+        loginLimiter.clear(req.ip)
         const token = makeAdminToken()
         res.cookie('aurora_admin', token, {
             httpOnly: true,
@@ -129,11 +138,12 @@ export const createAdminRouter = () => {
             servers: Store.servers,
             assets: Store.assets,
             themes: THEMES.map(({ id, name, swatch }) => ({ id, name, swatch })),
-            imports: Store.listImports().map(({ id, title, sourceUrl, createdAt, tracks }) => ({
+            imports: Store.listImports().map(({ id, title, sourceUrl, createdAt, tracks, applied }) => ({
                 id,
                 title,
                 sourceUrl,
                 createdAt,
+                applied: applied ? { at: applied.at, count: applied.count } : null,
                 total: tracks.length,
                 matched: tracks.filter(t => t.status === 'auto').length,
                 review: tracks.filter(t => t.status === 'review').length,
@@ -165,7 +175,7 @@ export const createAdminRouter = () => {
         if (!jellyfinUrl || !/^https?:\/\//i.test(jellyfinUrl)) {
             return res.status(400).json({ error: 'invalid_url', message: 'La URL debe empezar por http:// o https://' })
         }
-        if (code && Store.findByCode(code)) {
+        if (code && Store.codeInUse(code)) {
             return res.status(409).json({ error: 'code_taken', message: 'Ese código ya existe.' })
         }
         res.json(Store.addServer({ jellyfinUrl, label, code: code ? normalizeCode(code) : generateCode() }))
@@ -173,11 +183,8 @@ export const createAdminRouter = () => {
 
     router.put('/api/servers/:id', express.json(), (req, res) => {
         const { jellyfinUrl, label, code, active, apiKey } = req.body || {}
-        if (code) {
-            const existing = Store.findByCode(code)
-            if (existing && existing.id !== req.params.id) {
-                return res.status(409).json({ error: 'code_taken', message: 'Ese código ya existe.' })
-            }
+        if (code && Store.codeInUse(code, req.params.id)) {
+            return res.status(409).json({ error: 'code_taken', message: 'Ese código ya existe.' })
         }
         const patch = { active }
         if (jellyfinUrl !== undefined && jellyfinUrl !== '') patch.jellyfinUrl = jellyfinUrl
@@ -270,24 +277,7 @@ export const createAdminRouter = () => {
                 } catch {
                     candidates = []
                 }
-                const scored = candidates
-                    .map(candidate => ({
-                        itemId: candidate.Id,
-                        name: candidate.Name,
-                        artist: (candidate.Artists || []).join(', ') || candidate.AlbumArtist || '',
-                        album: candidate.Album || '',
-                        score: scoreCandidate(track, candidate),
-                    }))
-                    .sort((a, b) => b.score - a.score)
-
-                const best = scored[0]
-                return {
-                    ...track,
-                    candidates: scored.slice(0, 5),
-                    chosenId: best ? best.itemId : null,
-                    score: best?.score ?? 0,
-                    status: best ? classify(best.score) : 'none',
-                }
+                return { ...track, ...rankCandidates(track, candidates) }
             })
 
             const id = crypto.randomUUID()
@@ -348,7 +338,7 @@ export const createAdminRouter = () => {
             return res.status(400).json({ error: 'no_credentials', message: error.message })
         }
 
-        const ids = record.tracks.map(t => t.chosenId).filter(Boolean)
+        const { ids, duplicates, excluded } = selectPlaylistIds(record.tracks)
         if (!ids.length) return res.status(400).json({ error: 'nothing_matched', message: 'No hay pistas emparejadas.' })
 
         try {
@@ -359,7 +349,7 @@ export const createAdminRouter = () => {
             await jellyfin.addToPlaylist(server.jellyfinUrl, credentials.token, targetId, ids)
             record.applied = { playlistId: targetId, at: new Date().toISOString(), count: ids.length }
             Store.saveImport(record.id, record)
-            res.json({ ok: true, playlistId: targetId, added: ids.length })
+            res.json({ ok: true, playlistId: targetId, added: ids.length, duplicates, excluded })
         } catch (error) {
             res.status(502).json({ error: 'apply_failed', message: error.message })
         }

@@ -5,7 +5,21 @@ import { fileURLToPath } from 'node:url'
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 
+/**
+ * How many reverse proxies sit in front of the app (Express "trust proxy"): it decides which
+ * X-Forwarded-For entry is the real client. It matters for the login rate limit: with the wrong
+ * value every visitor looks like the proxy and shares one bucket, or a client could spoof its IP.
+ * TRUST_PROXY: a number of hops (default 1), "0"/"false" for none, or a list of IPs/CIDRs.
+ */
+export const parseTrustProxy = value => {
+    if (value === undefined || value === '') return 1
+    if (/^\d+$/.test(value)) return Number(value) === 0 ? false : Number(value)
+    if (value === 'false') return false
+    return value
+}
+
 export const config = {
+    trustProxy: parseTrustProxy(process.env.TRUST_PROXY),
     port: Number(process.env.PORT || 8787),
     host: process.env.HOST || '0.0.0.0',
     // Where the JSON database and uploaded assets live.
@@ -20,6 +34,9 @@ export const config = {
     adminPassword: process.env.ADMIN_PASSWORD || '',
     // Set to '1' to log every proxied request (noisy)
     debugProxy: process.env.DEBUG_PROXY === '1',
+    // Failed logins allowed per IP and window before answering 429 (admin panel and gateway login)
+    loginMaxFailures: Number(process.env.LOGIN_MAX_FAILURES || 10),
+    loginWindowMs: Number(process.env.LOGIN_WINDOW_MS || 15 * 60 * 1000),
 }
 
 export const paths = {

@@ -64,7 +64,8 @@
                 try {
                     // Reading navigator.serviceWorker itself throws in sandboxed frames, so the
                     // access has to live inside the try block.
-                    if (window.isSecureContext && navigator.serviceWorker) {
+                    // Vite does not emit sw.js in `npm run dev` (%MODE% is replaced at serve/build time).
+                    if ('%MODE%' !== 'development' && window.isSecureContext && navigator.serviceWorker) {
                         navigator.serviceWorker.register(new URL('sw.js', document.baseURI), { scope: './' }).catch(function () {})
                     }
                 } catch (e) {

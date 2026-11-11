@@ -51,7 +51,8 @@ export const createPlaylist = async (serverUrl, apiKey, name) => {
 }
 
 export const addToPlaylist = async (serverUrl, apiKey, playlistId, itemIds) => {
-    const chunk = 200
+    // ids travel in the query string: 200 ids is ~7 KB, which proxies (nginx 8k buffers) can reject
+    const chunk = 50
     for (let i = 0; i < itemIds.length; i += chunk) {
         const ids = itemIds.slice(i, i + chunk).join(',')
         await call(serverUrl, apiKey, `/Playlists/${playlistId}/Items?ids=${encodeURIComponent(ids)}`, {

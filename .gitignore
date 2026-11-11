@@ -8,3 +8,8 @@ server/data
 .vscode
 .idea
 *.tsbuildinfo
+
+worker/node_modules
+worker/public
+worker/.wrangler
+.dev.vars

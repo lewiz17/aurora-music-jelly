@@ -1,0 +1,68 @@
+# Aurora + HTTPS (Caddy) en una sola máquina, pensado para la instancia gratuita de Oracle
+# donde ya corre Jellyfin. Uso (desde la carpeta del proyecto):
+#
+#   cp deploy/oracle/.env.example deploy/oracle/.env   # y edítalo (o usa deploy/oracle/install.sh)
+#   docker compose -f deploy/oracle/docker-compose.yaml --env-file deploy/oracle/.env up -d --build
+#
+# Sólo Caddy publica puertos (80/443). Aurora queda en la red interna: nadie llega a él sin HTTPS.
+name: aurora # nombre fijo: los volúmenes quedan como aurora_aurora-data y aurora_caddy-data
+
+services:
+    aurora:
+        build:
+            context: ../..
+        container_name: aurora
+        restart: unless-stopped
+        environment:
+            NODE_ENV: production
+            ADMIN_USER: ${ADMIN_USER:-admin}
+            ADMIN_PASSWORD: ${ADMIN_PASSWORD:?define ADMIN_PASSWORD en deploy/oracle/.env}
+            # firma/cifra las sesiones: cadena aleatoria larga (install.sh la genera)
+            SESSION_SECRET: ${SESSION_SECRET:?define SESSION_SECRET en deploy/oracle/.env}
+            # el panel y la app sólo pueden incrustarse a sí mismos (evita clickjacking)
+            FRAME_ANCESTORS: "'self'"
+        volumes:
+            # códigos, logos, ajustes y listas importadas: es TODO el estado. Haz copia de este volumen.
+            - aurora-data:/data
+        # Para llegar a un Jellyfin que corre en la propia máquina (fuera de Docker):
+        #   URL del servidor en el panel -> http://host.docker.internal:8096
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        networks:
+            - web
+            # Si tu Jellyfin también corre en Docker, descomenta y pon el nombre de SU red
+            # (docker network ls) para usar http://jellyfin:8096 como URL en el panel:
+            # - jellyfin_net
+
+    caddy:
+        image: caddy:2-alpine
+        container_name: aurora-caddy
+        restart: unless-stopped
+        depends_on:
+            - aurora
+        ports:
+            - '80:80'
+            - '443:443'
+            - '443:443/udp' # HTTP/3
+        environment:
+            DOMAIN: ${DOMAIN:?define DOMAIN en deploy/oracle/.env}
+        volumes:
+            - ./Caddyfile:/etc/caddy/Caddyfile:ro
+            # sitios extra opcionales (*.caddy), p. ej. Jellyfin con HTTPS para las apps nativas
+            - ./extra:/etc/caddy/extra:ro
+            - caddy-data:/data # certificados: no los pierdas o Let's Encrypt limitará los reintentos
+            - caddy-config:/config
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        networks:
+            - web
+
+networks:
+    web:
+    # jellyfin_net:
+    #     external: true
+
+volumes:
+    aurora-data:
+    caddy-data:
+    caddy-config:

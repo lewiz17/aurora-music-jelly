@@ -137,6 +137,53 @@ const findPlaylistTitle = data => {
 }
 
 /**
+ * Reads ONE page of a playlist/album/song and returns `{ title?, sourceUrl?, tracks, continuation }`.
+ * Pass the previous `continuation` token to get the next page (it is null on the last one).
+ * Used by the Cloudflare Worker, where a request has a small CPU/subrequest budget, so a long
+ * playlist is read over several requests. `fetchPlaylist` below is unchanged.
+ */
+export const readPlaylistPage = async (input, continuation = null) => {
+    const parsed = parseYtInput(input)
+    if (!parsed) throw new Error('Enlace de YouTube Music no reconocido.')
+
+    if (parsed.type === 'song') {
+        const data = await post('player', { videoId: parsed.id })
+        const details = data?.videoDetails || {}
+        return {
+            title: details.title || 'Canción',
+            sourceUrl: `https://music.youtube.com/watch?v=${parsed.id}`,
+            tracks: [
+                {
+                    title: details.title || '',
+                    artist: details.author || '',
+                    album: details.title || '',
+                    duration: '',
+                    videoId: parsed.id,
+                },
+            ],
+            continuation: null,
+        }
+    }
+
+    if (continuation) {
+        const page = await post('browse', { continuation })
+        return { tracks: extractTracks(page), continuation: findContinuation(page) }
+    }
+
+    const browseId = parsed.type === 'album' ? parsed.id : `VL${parsed.id}`
+    const data = await post('browse', { browseId })
+    return {
+        title: findPlaylistTitle(data) || 'Lista de YouTube Music',
+        sourceUrl:
+            parsed.type === 'album'
+                ? `https://music.youtube.com/browse/${parsed.id}`
+                : `https://music.youtube.com/playlist?list=${parsed.id}`,
+        tracks: extractTracks(data),
+        continuation: findContinuation(data),
+    }
+}
+
+/**
  * Reads a playlist (following continuations) and returns its tracks in order.
  * `limit` protects against a family hitting a 5000-track playlist by accident.
  */

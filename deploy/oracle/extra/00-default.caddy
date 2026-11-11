@@ -1,0 +1,2 @@
+# Archivo vacío a propósito: garantiza que el `import /etc/caddy/extra/*.caddy` del Caddyfile
+# siempre encuentre algo. Tus sitios extra van en otros *.caddy de esta carpeta.

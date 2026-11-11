@@ -1,0 +1,6 @@
+# Los scripts de despliegue se ejecutan en Linux: deben quedarse con saltos de línea LF
+# aunque se editen o clonen en Windows (con CRLF fallan con "bad interpreter").
+*.sh text eol=lf
+Caddyfile text eol=lf
+*.caddy text eol=lf
+*.caddy.example text eol=lf

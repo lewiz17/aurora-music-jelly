@@ -33,6 +33,22 @@ ADMIN_PASSWORD=unapasswordlarga SESSION_SECRET=cambiame-esto-por-algo-aleatorio 
 
 Si no defines `ADMIN_PASSWORD`, la primera vez se genera una y se imprime en la consola (solo una vez).
 
+### Desarrollo (app + panel con recarga en caliente)
+
+```bash
+npm run dev:all
+```
+
+Arranca el servidor (`:8787`, con `--watch`) y Vite (`:5173`). Vite reenvía `/api`, `/jf`, `/admin` y `/branding` al servidor, así que tanto la app (<http://localhost:5173>) como el panel (<http://localhost:5173/admin>) funcionan desde el mismo origen. Usuario del panel `admin`, contraseña `admin1234` salvo que definas `ADMIN_PASSWORD`. Con `AURORA_SERVER=http://otro-host:puerto` apuntas Vite a otro servidor.
+
+### Pruebas
+
+```bash
+npm test
+```
+
+Ejecutan el servidor real contra un Jellyfin simulado: login por código, gateway (JSON comprimido, audio con `Range`), panel (sesión, servidores, ajustes, logos) y arranque. No necesitan red ni un Jellyfin de verdad.
+
 ---
 
 ## 2. Configurar desde el panel
@@ -95,7 +111,17 @@ docker compose up -d --build
 
 Queda en `http://TU-IP:8787`. Los datos persisten en el volumen `aurora-data`.
 
-### Render / Railway / Fly.io (free tier)
+### En la instancia gratuita de Oracle, junto a Jellyfin
+
+Guía completa con HTTPS automático (Caddy), firewall y copias de seguridad: [`DEPLOY-ORACLE.md`](DEPLOY-ORACLE.md).
+
+### En Fly.io
+
+Contenedor con volumen persistente, ~4 USD/mes (la factura menor de 5 USD la perdonan): [`DEPLOY-FLY.md`](DEPLOY-FLY.md).
+
+### Render / Railway (free tier)
+
+> Ojo: el disco de Render gratis es efímero (se borra en cada reinicio), así que perderías códigos y logos. Detalles en [`DEPLOY-FLY.md`](DEPLOY-FLY.md).
 
 1. Sube este repo a tu GitHub.
 2. Crea un **Web Service** apuntando al repo.
@@ -259,11 +285,14 @@ aurora/
 
 | Variable | Obligatoria | Descripción |
 |---|---|---|
-| `ADMIN_PASSWORD` | sí | Contraseña del panel |
+| `ADMIN_PASSWORD` | sí | Contraseña del panel. Si cambia, se actualiza la guardada al reiniciar (junto con `ADMIN_USER`) |
 | `SESSION_SECRET` | sí en producción | Firma y cifra las sesiones del gateway |
 | `SANDBOX_ORIGIN` | no | `1` permite usar la app y el panel dentro de un iframe de otro origen (vistas previas). Por defecto sólo se permite el mismo origen |
 | `FRAME_ANCESTORS` | no | Lista CSP de orígenes que pueden incrustar la app. Por defecto `'self' https: http:` |
 | `ADMIN_USER` | no | Usuario del panel (por defecto `admin`) |
+| `LOGIN_MAX_FAILURES` | no | Intentos fallidos por IP antes de responder 429 en el panel y en el login por código (por defecto `10`) |
+| `LOGIN_WINDOW_MS` | no | Ventana de esos intentos en milisegundos (por defecto `900000`, 15 min) |
+| `TRUST_PROXY` | no | Proxies inversos delante: nº de saltos (por defecto `1`), `0`/`false` ninguno, o lista de IPs/CIDR. Determina la IP real para el límite de intentos |
 | `PORT` | no | Puerto (por defecto `8787`) |
 | `DATA_DIR` | no | Carpeta de datos (por defecto `server/data`) |
 | `WEB_DIR` | no | Carpeta del build web (por defecto `dist`) |
