@@ -413,6 +413,10 @@
                 busy: false,
             }
 
+            // Live text of the import progress note, so the step loop can update
+            // it in place instead of re-rendering the whole panel on every step.
+            let importProgressEl = null
+
             const root = document.getElementById('root')
             const toastEl = document.getElementById('toast')
             const h = (tag, attrs = {}, ...children) => {
@@ -509,7 +513,11 @@
                     renderLogin()
                     throw new Error('Sesión caducada, vuelve a entrar.')
                 }
-                if (!response.ok) throw new Error(data.message || data.error || `Error ${response.status}`)
+                if (!response.ok) {
+                    const error = new Error(data.message || data.error || `Error ${response.status}`)
+                    error.status = response.status
+                    throw error
+                }
                 return data
             }
 
@@ -981,15 +989,65 @@
                 serverSelect.addEventListener('change', () => (state.importServerId = serverSelect.value))
                 state.importServerId = state.importServerId || state.servers[0]?.id
 
+                // Stepped imports: the Cloudflare Worker builds an import in small
+                // steps — POST /api/imports returns the record still pending (it
+                // carries `pending`/`reading` progress flags) and the work advances
+                // with POST /api/imports/:id/step. The classic backend returns the
+                // finished record, with no pending flags and no /step endpoint, so
+                // driveImport is a no-op there: no extra requests, same behaviour.
+                const importNeedsSteps = record =>
+                    Boolean(record?.reading) ||
+                    Number(record?.pending || 0) > 0 ||
+                    (record?.tracks || []).some(track => track.status === 'pending')
+
+                const setImportProgress = step => {
+                    if (!importProgressEl) return
+                    importProgressEl.textContent =
+                        step.phase === 'reading'
+                            ? `Leyendo la lista… ${step.total} pistas hasta ahora`
+                            : `Buscando coincidencias… ${step.total - step.pending} de ${step.total} pistas`
+                }
+
+                const stepImport = async id => {
+                    try {
+                        return await api(`/api/imports/${id}/step`, { method: 'POST' })
+                    } catch (err) {
+                        // No step endpoint (classic backend): not an error, just stop stepping.
+                        if (err.status === 404) return null
+                        throw err
+                    }
+                }
+
+                const driveImport = async record => {
+                    if (!importNeedsSteps(record)) return record
+                    // A 500-track list needs ~25 steps; 200 is a generous ceiling.
+                    for (let i = 0; i < 200; i++) {
+                        let step
+                        try {
+                            step = await stepImport(record.id)
+                        } catch {
+                            // One retry for a transient failure; a second one throws
+                            // and is surfaced by the caller like any other error.
+                            await new Promise(resolve => setTimeout(resolve, 800))
+                            step = await stepImport(record.id)
+                        }
+                        if (step === null) return record
+                        setImportProgress(step)
+                        if (step.phase === 'done') break
+                    }
+                    return api(`/api/imports/${record.id}`)
+                }
+
                 const run = async () => {
                     if (!urlInput.value.trim()) return toast('Pega un enlace de YouTube Music', true)
                     state.busy = true
                     renderShell()
                     try {
-                        const record = await api('/api/imports', {
+                        const created = await api('/api/imports', {
                             method: 'POST',
                             body: JSON.stringify({ url: urlInput.value.trim(), serverId: serverSelect.value }),
                         })
+                        const record = await driveImport(created)
                         state.importDetail = record
                         toast(`${record.tracks.length} pistas leídas`)
                         await refresh()
@@ -1132,8 +1190,25 @@
                         ),
                         h('button', {
                             onclick: async () => {
-                                state.importDetail = await api(`/api/imports/${item.id}`)
+                                const record = await api(`/api/imports/${item.id}`)
+                                if (!importNeedsSteps(record)) {
+                                    state.importDetail = record
+                                    renderShell()
+                                    return
+                                }
+                                // An import left half-way (e.g. the tab was closed while
+                                // it ran) resumes here, driven to completion first.
+                                state.busy = true
                                 renderShell()
+                                try {
+                                    state.importDetail = await driveImport(record)
+                                } catch (err) {
+                                    toast(err.message, true)
+                                    state.importDetail = record
+                                } finally {
+                                    state.busy = false
+                                    renderShell()
+                                }
                             },
                         }, 'Abrir')
                     )
@@ -1168,6 +1243,12 @@
                     }
                 }
 
+                let busyNode = null
+                if (state.busy) {
+                    importProgressEl = h('span', {}, 'Leyendo la lista y buscando coincidencias… puede tardar un minuto.')
+                    busyNode = h('div', { class: 'empty' }, h('span', { class: 'spinner' }), importProgressEl)
+                }
+
                 setTimeout(refreshStatus, 0)
                 serverSelect.addEventListener('change', refreshStatus)
 
@@ -1193,7 +1274,7 @@
                         { class: 'card' },
                         h('h2', {}, 'Importar desde YouTube Music'),
                         h('p', { class: 'hint' }, 'Pega el enlace de una lista pública. Buscamos cada canción en tu biblioteca y te dejamos revisar las coincidencias dudosas antes de crear la lista.'),
-                        state.busy ? h('div', { class: 'empty' }, h('span', { class: 'spinner' }), 'Leyendo la lista y buscando coincidencias… puede tardar un minuto.') : null,
+                        busyNode,
                         h(
                             'div',
                             { class: 'row' },
