@@ -1,15 +1,15 @@
 # Aurora Music
 
-Un frontend privado de música que **esconde por completo el servidor que hay detrás**. Tu familia entra con **usuario + contraseña**, escribe un **código de acceso** corto y escucha.
+Un **reproductor de música para tu servidor Jellyfin**, con su propio **panel de administración** para gestionar los servidores y las listas. Tu familia entra con un **código de acceso** corto, su **usuario + contraseña** de Jellyfin, y escucha desde una app web pensada solo para la música.
 
-- 🎟️ **Código en vez de URL**: nadie escribe `http://mi-servidor:8096`, solo un código tipo `FAMILIA`.
-- 🛡️ **El servidor real nunca llega al navegador**: todas las llamadas (API, carátulas, audio) pasan por un *gateway* propio.
+- 🖥️ **Administrador de servidores**: registra uno o varios servidores Jellyfin en el panel y asígnales un código (`FAMILIA`, `CASA-2026`…). Nadie tiene que escribir ni recordar la URL del servidor, solo el código.
+- 📋 **Administrador de listas**: importa listas de YouTube Music, empareja cada canción con tu biblioteca y crea la playlist en tu Jellyfin.
+- 🚫📦 **No aloja ni almacena tu música**: los archivos y las bibliotecas viven en tu Jellyfin. Aurora se conecta a él mediante un *gateway* propio (API, carátulas y audio pasan por Aurora), pero no guarda el contenido del servidor: lo único que almacena es su propia configuración (servidores registrados, códigos, logos y ajustes).
+- 📥 **Descargas offline en el cliente**: el audio que cada usuario descarga para escuchar sin conexión se guarda en su propio navegador o dispositivo, nunca en el servidor de Aurora.
 - 🎨 **Temas con degradados** (Aurora, Spotify, Deezer, Apple Music, Ocean, Midnight, Forest…), sin logos de terceros.
 - 🖼️ **Logos e imágenes propios** subidos desde el panel.
 - 🇪🇸 **Español por defecto**, interruptor a inglés en Ajustes.
 - 🔎 **Búsqueda dentro de la vista principal**, no en el menú lateral.
-- 📋 **Importador de listas de YouTube Music** que empareja cada canción con tu biblioteca y crea la playlist.
-- 🙈 **Nada de "About"**, nada de GitHub, nada que diga el nombre del motor.
 
 ---
 
@@ -54,9 +54,9 @@ Ejecutan el servidor real contra un Jellyfin simulado: login por código, gatewa
 ## 2. Configurar desde el panel
 
 ### a) Servidores y códigos
-1. `Servidores y códigos` → pega la URL real de tu servidor (ej: `https://jellyfin.micasa.com`).
+1. `Servidores y códigos` → pega la URL de tu servidor Jellyfin (ej: `https://jellyfin.micasa.com`).
 2. Deja el **código** vacío para que se genere uno automático, o escribe el que quieras (`FAMILIA`, `CASA-2026`…).
-3. **Prueba** para verificar conexión. Verás el nombre y la versión reales del servidor.
+3. **Prueba** para verificar conexión. Verás el nombre y la versión del servidor.
 
 A partir de aquí tus familiares solo necesitan ese código y su usuario/contraseña.
 
@@ -133,7 +133,7 @@ Contenedor con volumen persistente, ~4 USD/mes (la factura menor de 5 USD la per
    - `DATA_DIR=/data`
 5. **Disco persistente** (importante): monta un volumen de 1 GB en `/data`. Sin él, los códigos y logos se pierden en cada redeploy.
 
-> En free tiers el contenedor se duerme: la primera visita tarda unos segundos en despertar. A cambio, tus familiares ven una URL tuya, nunca la del servidor.
+> En free tiers el contenedor se duerme: la primera visita tarda unos segundos en despertar. A cambio, tus familiares entran siempre por la URL de tu Aurora.
 
 ### En tu propio servidor con Node (systemd + Caddy/Nginx)
 
@@ -240,8 +240,8 @@ Los archivos listos para copiar están en [`deploy/`](deploy/): `aurora.service`
 
 | Área | Antes | Ahora |
 |---|---|---|
-| Login | URL del servidor + usuario | **Código** + usuario + contraseña (la URL vive solo en el servidor) |
-| Red | Llamadas directas al servidor | **Gateway** `/jf/<token>` cifrado (AES-GCM), todo pasa por tu dominio |
+| Login | URL del servidor + usuario | **Código** + usuario + contraseña (la URL del servidor se configura una sola vez en el panel) |
+| Red | Llamadas directas al servidor | **Gateway** `/jf/<token>` cifrado (AES-GCM): la app habla con Aurora y Aurora con tu Jellyfin |
 | Credenciales | Token en `localStorage` y en la URL de cada imagen/stream | Token de gateway opaco + `Authorization` header, sin secretos en URLs |
 | Temas | Claro/oscuro | **9 temas con degradados** + claro/oscuro/sistema |
 | Marca | Logo fijo del proyecto | **Logos propios** desde el panel, favicon dinámico |
@@ -301,10 +301,10 @@ aurora/
 
 ## 8. Límites y cosas a saber
 
-- El gateway **no** es un CDN: el audio pasa por tu servidor. Con 4–5 familiares va sobrado; para 50 usa un VPS pequeño.
+- El gateway **no** es un CDN ni un almacén: el audio fluye desde tu Jellyfin a través de Aurora, sin guardarse en ella. Con 4–5 familiares va sobrado; para 50 usa un VPS pequeño.
 - Las listas de YouTube Music se leen sin cuenta: solo funcionan con playlists públicas (las privadas requieren OAuth, que no está implementado).
 - Los códigos se pueden cambiar o desactivar en cualquier momento desde el panel; el cambio aplica al siguiente login.
-- La sección de descargas offline sigue funcionando, pero el audio descargado se guarda en el navegador de cada usuario.
+- Las descargas offline se guardan solo en el cliente de cada usuario (su navegador o dispositivo), nunca en el servidor de Aurora.
 
 ---
 
