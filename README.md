@@ -11,6 +11,12 @@ Un **reproductor de música para tu servidor Jellyfin**, con su propio **panel d
 - 🇪🇸 **Español por defecto**, interruptor a inglés en Ajustes.
 - 🔎 **Búsqueda dentro de la vista principal**, no en el menú lateral.
 
+## Capturas
+
+<img src="docs/screenshots/reproductor.jpg" width="300" alt="Reproductor de Aurora Music reproduciendo una canción de Jellyfin"> <img src="docs/screenshots/letras.jpg" width="300" alt="Letras sincronizadas en Aurora Music">
+
+![Sección de descargas de Aurora Music en escritorio](docs/screenshots/descargas.jpg)
+
 ---
 
 ## 1. Arrancarlo en local (5 minutos)
